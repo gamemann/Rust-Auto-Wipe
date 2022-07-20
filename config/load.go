@@ -28,6 +28,9 @@ type Server struct {
 }
 
 type Config struct {
+	// Paths (e.g. /home/container/server/rust).
+	PathToServerFiles string `json:"pathtoserverfiles"`
+
 	// Wipe date times.
 	DefaultTimezone string `json:"defaulttimezone"`
 	DefaultWipeTime string `json:"defaultwipetime"`
