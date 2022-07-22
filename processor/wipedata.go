@@ -24,7 +24,8 @@ type WipeData struct {
 	MapSeeds        []int
 	MapSeedPickType uint
 	MapSeedsMerge   bool
-	NextMapSeed     int
+
+	NextMapSeed int
 
 	ChangeHostName bool
 	HostName       string
@@ -47,8 +48,8 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
 	// Check for time zone override.
 	timezone := cfg.DefaultTimezone
 
-	if len(srv.Timezone) > 0 {
-		timezone = srv.Timezone
+	if srv.Timezone != nil && len(*srv.Timezone) > 0 {
+		timezone = *srv.Timezone
 	}
 
 	wipedata.TimeZone = timezone
@@ -56,9 +57,117 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
 	// Check for wipe time override.
 	wipetime := cfg.DefaultWipeTime
 
-	if len(srv.WipeTime) > 0 {
-		wipetime = srv.WipeTime
+	if srv.WipeTime != nil && len(*srv.WipeTime) > 0 {
+		wipetime = *srv.WipeTime
 	}
+
+	// Check for delete map override.
+	deletemap := cfg.DefaultDeleteMap
+
+	if srv.DeleteMap != nil {
+		deletemap = *srv.DeleteMap
+	}
+
+	wipedata.DeleteMap = deletemap
+
+	// Check for delete blueprint override.
+	deletebp := cfg.DefaultDeleteBP
+
+	if srv.DeleteBP != nil {
+		deletebp = *srv.DeleteBP
+	}
+
+	wipedata.DeleteBP = deletebp
+
+	// Check for delete player data override.
+	deletepd := cfg.DefaultDeletePD
+
+	if srv.DeletePD != nil {
+		deletepd = *srv.DeletePD
+	}
+
+	wipedata.DeletePD = deletepd
+
+	// Check for change map seed override.
+	changemapseeds := cfg.DefaultChangeMapSeed
+
+	if srv.ChangeMapSeeds != nil {
+		changemapseeds = *srv.ChangeMapSeeds
+	}
+
+	wipedata.ChangeMapSeeds = changemapseeds
+
+	// Check for map seeds override.
+	mapseeds := cfg.DefaultMapSeeds
+
+	if srv.MapSeeds != nil {
+		mapseeds = *srv.MapSeeds
+	}
+
+	wipedata.MapSeeds = mapseeds
+
+	// Check for map seeds pick type override.
+	mapseedspicktype := cfg.DefaultMapSeedsPickType
+
+	if srv.MapSeedsPickType != nil {
+		mapseedspicktype = *srv.MapSeedsPickType
+	}
+
+	wipedata.MapSeedPickType = uint(mapseedspicktype)
+
+	// Check for map seeds merge in server-specific settings.
+	mapseedsmerge := false
+
+	if srv.MapSeedsMerge != nil {
+		mapseedsmerge = *srv.MapSeedsMerge
+	}
+
+	wipedata.MapSeedsMerge = mapseedsmerge
+
+	// Check for change host name override.
+	changehostname := cfg.DefaultChangeHostName
+
+	if srv.ChangeHostName != nil {
+		changehostname = *srv.ChangeHostName
+	}
+
+	wipedata.ChangeHostName = changehostname
+
+	// Check for host name override.
+	hostname := cfg.DefaultHostName
+
+	if srv.HostName != nil {
+		hostname = *srv.HostName
+	}
+
+	wipedata.HostName = hostname
+
+	// Check for chat message enable override.
+	chatmsgenable := cfg.DefaultChatMsgEnable
+
+	if srv.ChatMsgEnable != nil {
+		chatmsgenable = *srv.ChatMsgEnable
+	}
+
+	wipedata.ChatMsgEnable = chatmsgenable
+
+	// Check for chat message amount override.
+	chatmsgamount := cfg.DefaultChatMsgAmount
+
+	if srv.ChatMsgAmount != nil {
+		chatmsgamount = *srv.ChatMsgAmount
+	}
+
+	wipedata.ChatMsgAmount = uint(chatmsgamount)
+
+	// Check for chat message override.
+	chatmsg := cfg.DefaultChatMsg
+
+	if srv.ChatMsg != nil {
+		chatmsg = *srv.ChatMsg
+	}
+
+	wipedata.ChatMsg = chatmsg
 
 	// Parse wipe time.
 	info := strings.Split(wipetime, " ")

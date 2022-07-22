@@ -4,38 +4,39 @@ type Server struct {
 	UUID int `json:"uuid"`
 
 	// Wipe date/times.
-	Timezone string `json:"timezone"`
-	WipeTime string `json:"wipetime"`
+	Timezone *string `json:"timezone"`
+	WipeTime *string `json:"wipetime"`
 
 	// Files/data that should be deleted.
-	DeleteMap bool `json:"deletemap"`
-	DeleteBP  bool `json:"deletebp"`
-	DeletePD  bool `json:"deletepd"`
+	DeleteMap *bool `json:"deletemap"`
+	DeleteBP  *bool `json:"deletebp"`
+	DeletePD  *bool `json:"deletepd"`
 
 	// Map seeds.
-	ChangeMapSeeds   bool  `json:"changemapseed"`
-	MapSeeds         []int `json:"mapseeds"`
-	MapSeedsPickType int   `json:"mapseedspicktype"`
+	ChangeMapSeeds   *bool  `json:"changemapseed"`
+	MapSeeds         *[]int `json:"mapseeds"`
+	MapSeedsPickType *int   `json:"mapseedspicktype"`
+	MapSeedsMerge    *bool  `json:"mergeseeds"`
 
 	// Host name.
-	ChangeHostName bool   `json:"changehostname"`
-	HostName       string `json:"hostname"`
+	ChangeHostName *bool   `json:"changehostname"`
+	HostName       *string `json:"hostname"`
 
 	// Warning chat messages.
-	ChatMsgEnable bool   `json:"chatmsgenable"`
-	ChatMsg       string `json:"chatmsg"`
-	ChatMsgAmount int    `json:"chatmsgamount"`
+	ChatMsgEnable *bool   `json:"chatmsgenable"`
+	ChatMsg       *string `json:"chatmsg"`
+	ChatMsgAmount *int    `json:"chatmsgamount"`
 
 	// API overrides.
-	APIURLOverride string `json:"apiurloverride"`
-	APITokenOverride string `json:"apitokenoverride"`
+	APIURLOverride   *string `json:"apiurloverride"`
+	APITokenOverride *string `json:"apitokenoverride"`
 }
 
 type Config struct {
 	// Pterodactyl API.
-	APIURL string `json:"apiurl"`
-	APIToken    string `json:"apitoken"`
-	DebugLevel int `json:"debuglevel"`
+	APIURL     string `json:"apiurl"`
+	APIToken   string `json:"apitoken"`
+	DebugLevel int    `json:"debuglevel"`
 
 	// Paths (e.g. /home/container/server/rust).
 	DefaultPathToServerFiles string `json:"defaultpathtoserverfiles"`
