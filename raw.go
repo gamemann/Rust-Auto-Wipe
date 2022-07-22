@@ -2,8 +2,11 @@ package main
 
 import (
 	"flag"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/gamemann/Rust-Auto-Wipe/config"
-	"github.com/gamemann/Rust-Auto-Wipe/pterodactyl"
 )
 
 func main() {
