@@ -191,6 +191,8 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
 		wipedata.WipeDay = 5
 	case "sunday":
 		wipedata.WipeDay = 6
+	default:
+		wipedata.WipeDay = 0
 	}
 
 	td := strings.Split(timeinfo, ":")
