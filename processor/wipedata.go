@@ -34,6 +34,9 @@ type WipeData struct {
 	ChatMsgEnable bool
 	ChatMsgAmount uint
 	ChatMsg       string
+
+	APIURL   string
+	APIToken string
 }
 
 func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
@@ -168,6 +171,24 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
 	}
 
 	wipedata.ChatMsg = chatmsg
+
+	// Check for API URL override.
+	apiurl := cfg.APIURL
+
+	if srv.APIURLOverride != nil {
+		apiurl = *srv.APIURLOverride
+	}
+
+	wipedata.APIURL = apiurl
+
+	// Check for API token override.
+	apitoken := cfg.APIToken
+
+	if srv.APITokenOverride != nil {
+		apitoken = *srv.APITokenOverride
+	}
+
+	wipedata.APIToken = apitoken
 
 	// Parse wipe time.
 	info := strings.Split(wipetime, " ")
