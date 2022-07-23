@@ -197,6 +197,11 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
 
 	td := strings.Split(timeinfo, ":")
 
+	// Make sure we have two or more elements.
+	if len(td) < 2 {
+		return errors.New("Time info split failure (< 2 array size).")
+	}
+
 	hour, err := strconv.Atoi(td[0])
 
 	if err != nil {
@@ -204,6 +209,10 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
 	}
 
 	min, err := strconv.Atoi(td[1])
+
+	if err != nil {
+		return err
+	}
 
 	// Do boundary checks.
 	if hour > 24 {
