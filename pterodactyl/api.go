@@ -10,7 +10,7 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/processor"
 )
 
-func SendAPIRequest(cfg *config.Config, wipedata *processor.WipeData, request_type string, request_endpoint string, post_data map[string]string) (string, int, error) {
+func SendAPIRequest(wipedata *processor.WipeData, request_type string, request_endpoint string, post_data map[string]string) (string, int, error) {
 	// Initialize data and return code (status code).
 	d := ""
 	rc := -1
