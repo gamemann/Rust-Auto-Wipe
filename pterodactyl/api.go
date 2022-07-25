@@ -10,7 +10,7 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/processor"
 )
 
-func SendAPIRequest(cfg *config.Config, wipedata *processor.WipeData, request_type string, request_endpoint string, post_data string) (string, int, error) {
+func SendAPIRequest(cfg *config.Config, wipedata *processor.WipeData, request_type string, request_endpoint string, post_data map[string]string) (string, int, error) {
 	// Initialize data and return code (status code).
 	d := ""
 	rc := -1
@@ -33,6 +33,14 @@ func SendAPIRequest(cfg *config.Config, wipedata *processor.WipeData, request_ty
 
 	// Accept only JSON.
 	req.Header.Set("Accept", "application/json")
+
+	// Check to see if we need to send post data.
+	if request_type == "POST" {
+		// Set POST data.
+		for key, value := range post_data {
+			req.PostForm.Add(key, value)
+		}
+	}
 
 	// Perform HTTP request and check for errors.
 	resp, err := client.Do(req)
