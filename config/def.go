@@ -1,7 +1,7 @@
 package config
 
 type Server struct {
-	UUID int `json:"uuid"`
+	UUID string `json:"uuid"`
 
 	// Wipe date/times.
 	Timezone *string `json:"timezone"`
