@@ -1,12 +1,12 @@
 package pterodactyl
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
 
-	"github.com/gamemann/Rust-Auto-Wipe/config"
 	"github.com/gamemann/Rust-Auto-Wipe/processor"
 )
 
@@ -67,4 +67,10 @@ func SendAPIRequest(wipedata *processor.WipeData, request_type string, request_e
 	d = string(body)
 
 	return d, rc, nil
+}
+
+func ProcessResponse(data []byte, structure *interface{}) error {
+	err := json.Unmarshal(data, structure)
+
+	return err
 }
