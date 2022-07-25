@@ -1,5 +1,7 @@
 package processor
 
+import "math/rand"
+
 // Processes seeds and determines the next seed. Should occur before wipe.
 func (wipedata *WipeData) ProcessSeeds(UUID string) bool {
 
@@ -22,8 +24,8 @@ func (wipedata *WipeData) GetNextSeed(seeds []int, curseed int, picktype int) in
 			}
 		}
 	} else {
-		seed = rand.Intn((len(seeds) - 1) + 1) + 0
+		seed = rand.Intn((len(seeds)-1)+1) + 0
 	}
 
-	return seed 
+	return seed
 }
