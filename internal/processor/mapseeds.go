@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"strconv"
 
-	"github.com/gamemann/Rust-Auto-Wipe/internal/pterodactyl"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
 // Processes seeds and determines the next seed. Should occur before wipe.
