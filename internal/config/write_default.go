@@ -8,6 +8,13 @@ import (
 func (cfg *Config) WriteDefaultsToFile(file string) error {
 	var err error
 
+	err = os.MkdirAll("/etc/raw", 0755)
+
+	// If we have an error and it doesn't look like an "already exist" error, return the error.
+	if err != nil && !os.IsExist(err) {
+		return err
+	}
+
 	fp, err := os.Create(file)
 
 	if err != nil {
