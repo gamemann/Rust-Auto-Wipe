@@ -26,7 +26,7 @@ type Data struct {
 
 	DeleteMap bool
 	DeleteBP  bool
-	DeletePD  bool
+	DeleteSv  bool
 
 	ChangeMapSeeds  bool
 	MapSeeds        []int
@@ -111,13 +111,13 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.DeleteBP = deletebp
 
 	// Check for delete player data override.
-	deletepd := cfg.DeletePD
+	deletesv := cfg.DeleteSv
 
-	if srv.DeletePD != nil {
-		deletepd = *srv.DeletePD
+	if srv.DeleteSv != nil {
+		deletesv = *srv.DeleteSv
 	}
 
-	data.DeletePD = deletepd
+	data.DeleteSv = deletesv
 
 	// Check for change map seed override.
 	changemapseeds := cfg.ChangeMapSeed

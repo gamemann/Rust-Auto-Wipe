@@ -13,7 +13,7 @@ type Server struct {
 	// Files/data that should be deleted.
 	DeleteMap *bool `json:"deletemap"`
 	DeleteBP  *bool `json:"deletebp"`
-	DeletePD  *bool `json:"deletepd"`
+	DeleteSv  *bool `json:"deletesv"`
 
 	// Map seeds.
 	ChangeMapSeeds   *bool  `json:"changemapseed"`
@@ -36,7 +36,7 @@ type Server struct {
 	DebugLevel *int    `json:"debuglevel"`
 
 	// Paths (e.g. /home/container/server/rust).
-	PathToServerFiles string `json:"pathtoserverfiles"`
+	PathToServerFiles *string `json:"pathtoserverfiles"`
 }
 
 type Config struct {
@@ -57,7 +57,7 @@ type Config struct {
 	// Files/data that should be deleted.
 	DeleteMap bool `json:"deletemap"`
 	DeleteBP  bool `json:"deletebp"`
-	DeletePD  bool `json:"deletepd"`
+	DeleteSv  bool `json:"deletesv"`
 
 	// Map seeds.
 	ChangeMapSeed    bool  `json:"changemapseed"`
@@ -89,7 +89,7 @@ func (cfg *Config) SetDefaults() {
 
 	cfg.DeleteMap = true
 	cfg.DeleteBP = true
-	cfg.DeletePD = true
+	cfg.DeleteSv = true
 
 	cfg.ChangeMapSeed = false
 	cfg.MapSeedsPickType = 1
