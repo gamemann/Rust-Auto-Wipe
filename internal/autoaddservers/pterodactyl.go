@@ -60,26 +60,26 @@ type ServerListResp struct {
 					HostName  *string `json:"HOSTNAME"`
 
 					RAW_Enabled           *string `json:"RAW_ENABLED"`
-					RAW_PathToServerFiles *string `json:"RAW_PATHTOSERVERFILES`
-					RAW_Timezone          *string `json:"RAW_TIMEZONE`
+					RAW_PathToServerFiles *string `json:"RAW_PATHTOSERVERFILES"`
+					RAW_Timezone          *string `json:"RAW_TIMEZONE"`
 					RAW_WipeTime          *string `json:"RAW_WIPETIME"`
 					RAW_WipeMonthly       *string `json:"RAW_WIPEMONTHLY"`
-					RAW_WipeBiweekly      *string `json:"RAW_WIPEBIWEEKLY`
-					RAW_DeleteMap         *string `json:"RAW_DELETEMAP`
-					RAW_DeleteBP          *string `json:"RAW_DELETEBP`
-					RAW_DeleteDeaths      *string `json:"RAW_DELETEDEATHS`
-					RAW_DeleteStates      *string `json:"RAW_DELETESTATES`
-					RAW_DeleteIdentities  *string `json:"RAW_DELETEIDENTITIES`
+					RAW_WipeBiweekly      *string `json:"RAW_WIPEBIWEEKLY"`
+					RAW_DeleteMap         *string `json:"RAW_DELETEMAP"`
+					RAW_DeleteBP          *string `json:"RAW_DELETEBP"`
+					RAW_DeleteDeaths      *string `json:"RAW_DELETEDEATHS"`
+					RAW_DeleteStates      *string `json:"RAW_DELETESTATES"`
+					RAW_DeleteIdentities  *string `json:"RAW_DELETEIDENTITIES"`
 					RAW_DeleteTokens      *string `json:"RAW_DELETETOKENS"`
-					RAW_DeleteSv          *string `json:"RAW_DELETESV`
-					RAW_ChangeMapSeeds    *string `json:"RAW_CHANGEMAPSEEDS`
-					RAW_MapSeeds          *string `json:"RAW_MAPSEEDS`
-					RAW_MapSeedsPickType  *string `json:"RAW_MAPSEEDSPICKTYPE`
-					RAW_MapSeedsMerge     *string `json:"RAW_MAPSEEDSMERGE`
-					RAW_ChangeHostname    *string `json:"RAW_CHANGEHOSTNAME`
-					RAW_Hostname          *string `json:"RAW_HOSTNAME`
-					RAW_MergeWarnings     *string `json:"RAW_MERGEWARNINGS`
-					RAW_WarningMessages   *string `json:"RAW_WARNINGMESSAGES`
+					RAW_DeleteSv          *string `json:"RAW_DELETESV"`
+					RAW_ChangeMapSeeds    *string `json:"RAW_CHANGEMAPSEEDS"`
+					RAW_MapSeeds          *string `json:"RAW_MAPSEEDS"`
+					RAW_MapSeedsPickType  *string `json:"RAW_MAPSEEDSPICKTYPE"`
+					RAW_MapSeedsMerge     *string `json:"RAW_MAPSEEDSMERGE"`
+					RAW_ChangeHostname    *string `json:"RAW_CHANGEHOSTNAME"`
+					RAW_Hostname          *string `json:"RAW_HOSTNAME"`
+					RAW_MergeWarnings     *string `json:"RAW_MERGEWARNINGS"`
+					RAW_WarningMessages   *string `json:"RAW_WARNINGMESSAGES"`
 				} `json:"environment"`
 			} `json:"container"`
 			UpdatedAt time.Time `json:"updated_at"`
