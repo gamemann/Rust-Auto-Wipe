@@ -122,6 +122,6 @@ func (cfg *Config) SetDefaults() {
 		warning.Message = "Wiping server in {seconds_left} seconds. Please join back!"
 		warning.WarningTime = uint(i)
 
-		cfg.WarningMessages = append(cfg.WarningMessages)
+		cfg.WarningMessages = append(cfg.WarningMessages, warning)
 	}
 }
