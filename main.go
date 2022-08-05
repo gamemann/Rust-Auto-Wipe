@@ -21,7 +21,7 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 	wipe.ProcessData(&data, cfg, srv)
 
-	skip_next := false
+	skip_next := true
 
 	// Create a repeating loop until the two signals are called in the main function.
 	for true {
@@ -69,10 +69,14 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 		// Check if we need to wipe.
 		if do_wipe {
-			// First, we can process seeds and host name.
+			// Process map seeds.
 			wipe.ProcessSeeds(&data, srv.UUID)
+
+			// Process host name.
 			wipe.ProcessHostName(&data, srv.UUID)
 
+			// Process files.
+			wipe.ProcessFiles(&data, srv.UUID)
 		}
 
 		// Update last values.
