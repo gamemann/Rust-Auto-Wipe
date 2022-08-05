@@ -114,5 +114,5 @@ func (cfg *Config) SetDefaults() {
 
 	cfg.ChatMsgEnable = true
 	cfg.ChatMsgAmount = 5
-	cfg.ChatMsg = "Wiping server in {seconds} seconds. Please join back!"
+	cfg.ChatMsg = "Wiping server in {seconds_left} seconds. Please join back!"
 }
