@@ -65,6 +65,12 @@ func (wipedata *WipeData) ProcessSeeds(UUID string) bool {
 	// Send API request.
 	d, _, err = pterodactyl.SendAPIRequest(wipedata.APIURL, wipedata.APIToken, "PUT", "client/servers/"+UUID+"/variable", post_data)
 
+	if err != nil {
+		fmt.Println(err)
+
+		return false
+	}
+
 	return true
 }
 
