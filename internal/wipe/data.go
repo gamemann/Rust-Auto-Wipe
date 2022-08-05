@@ -205,19 +205,19 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 
 	// Convert day to numberic value from 0 - 6.
 	switch strings.ToLower(day) {
-	case "monday":
-		data.WipeDay = 0
-	case "tuesday":
-		data.WipeDay = 1
-	case "wednesday":
-		data.WipeDay = 2
-	case "thursday":
-		data.WipeDay = 3
-	case "friday":
-		data.WipeDay = 4
-	case "saturday":
-		data.WipeDay = 5
 	case "sunday":
+		data.WipeDay = 0
+	case "monday":
+		data.WipeDay = 1
+	case "tuesday":
+		data.WipeDay = 2
+	case "wednesday":
+		data.WipeDay = 3
+	case "thursday":
+		data.WipeDay = 4
+	case "friday":
+		data.WipeDay = 5
+	case "saturday":
 		data.WipeDay = 6
 	default:
 		data.WipeDay = 0
