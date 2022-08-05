@@ -47,7 +47,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	}
 
 	// Check for time zone override.
-	timezone := cfg.DefaultTimezone
+	timezone := cfg.Timezone
 
 	if srv.Timezone != nil && len(*srv.Timezone) > 0 {
 		timezone = *srv.Timezone
@@ -56,14 +56,14 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.TimeZone = timezone
 
 	// Check for wipe time override.
-	wipetime := cfg.DefaultWipeTime
+	wipetime := cfg.WipeTime
 
 	if srv.WipeTime != nil && len(*srv.WipeTime) > 0 {
 		wipetime = *srv.WipeTime
 	}
 
 	// Check for delete map override.
-	deletemap := cfg.DefaultDeleteMap
+	deletemap := cfg.DeleteMap
 
 	if srv.DeleteMap != nil {
 		deletemap = *srv.DeleteMap
@@ -72,7 +72,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.DeleteMap = deletemap
 
 	// Check for delete blueprint override.
-	deletebp := cfg.DefaultDeleteBP
+	deletebp := cfg.DeleteBP
 
 	if srv.DeleteBP != nil {
 		deletebp = *srv.DeleteBP
@@ -81,7 +81,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.DeleteBP = deletebp
 
 	// Check for delete player data override.
-	deletepd := cfg.DefaultDeletePD
+	deletepd := cfg.DeletePD
 
 	if srv.DeletePD != nil {
 		deletepd = *srv.DeletePD
@@ -90,7 +90,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.DeletePD = deletepd
 
 	// Check for change map seed override.
-	changemapseeds := cfg.DefaultChangeMapSeed
+	changemapseeds := cfg.ChangeMapSeed
 
 	if srv.ChangeMapSeeds != nil {
 		changemapseeds = *srv.ChangeMapSeeds
@@ -99,7 +99,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.ChangeMapSeeds = changemapseeds
 
 	// Check for map seeds override.
-	mapseeds := cfg.DefaultMapSeeds
+	mapseeds := cfg.MapSeeds
 
 	if srv.MapSeeds != nil {
 		mapseeds = *srv.MapSeeds
@@ -108,7 +108,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.MapSeeds = mapseeds
 
 	// Check for map seeds pick type override.
-	mapseedspicktype := cfg.DefaultMapSeedsPickType
+	mapseedspicktype := cfg.MapSeedsPickType
 
 	if srv.MapSeedsPickType != nil {
 		mapseedspicktype = *srv.MapSeedsPickType
@@ -126,7 +126,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.MapSeedsMerge = mapseedsmerge
 
 	// Check for change host name override.
-	changehostname := cfg.DefaultChangeHostName
+	changehostname := cfg.ChangeHostName
 
 	if srv.ChangeHostName != nil {
 		changehostname = *srv.ChangeHostName
@@ -135,7 +135,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.ChangeHostName = changehostname
 
 	// Check for host name override.
-	hostname := cfg.DefaultHostName
+	hostname := cfg.HostName
 
 	if srv.HostName != nil {
 		hostname = *srv.HostName
@@ -144,7 +144,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.HostName = hostname
 
 	// Check for chat message enable override.
-	chatmsgenable := cfg.DefaultChatMsgEnable
+	chatmsgenable := cfg.ChatMsgEnable
 
 	if srv.ChatMsgEnable != nil {
 		chatmsgenable = *srv.ChatMsgEnable
@@ -153,7 +153,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.ChatMsgEnable = chatmsgenable
 
 	// Check for chat message amount override.
-	chatmsgamount := cfg.DefaultChatMsgAmount
+	chatmsgamount := cfg.ChatMsgAmount
 
 	if srv.ChatMsgAmount != nil {
 		chatmsgamount = *srv.ChatMsgAmount
@@ -162,7 +162,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.ChatMsgAmount = uint(chatmsgamount)
 
 	// Check for chat message override.
-	chatmsg := cfg.DefaultChatMsg
+	chatmsg := cfg.ChatMsg
 
 	if srv.ChatMsg != nil {
 		chatmsg = *srv.ChatMsg

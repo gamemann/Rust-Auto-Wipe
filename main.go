@@ -19,6 +19,7 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 	// Create a repeating loop until the two signals are called in the main function.
 	for true {
+		day := time.Now().Weekday()
 
 		time.Sleep(time.Duration(time.Second))
 	}

@@ -48,54 +48,54 @@ type Config struct {
 	DebugLevel int    `json:"debuglevel"`
 
 	// Paths (e.g. /home/container/server/rust).
-	DefaultPathToServerFiles string `json:"defaultpathtoserverfiles"`
+	PathToServerFiles string `json:"pathtoserverfiles"`
 
 	// Wipe date times.
-	DefaultTimezone string `json:"defaulttimezone"`
-	DefaultWipeTime string `json:"defaultwipetime"`
+	Timezone string `json:"timezone"`
+	WipeTime string `json:"wipetime"`
 
 	// Files/data that should be deleted.
-	DefaultDeleteMap bool `json:"defaultdeletemap"`
-	DefaultDeleteBP  bool `json:"defaultdeletebp"`
-	DefaultDeletePD  bool `json:"defaultdeletepd"`
+	DeleteMap bool `json:"deletemap"`
+	DeleteBP  bool `json:"deletebp"`
+	DeletePD  bool `json:"deletepd"`
 
 	// Map seeds.
-	DefaultChangeMapSeed    bool  `json:"defaultchangemapseed"`
-	DefaultMapSeeds         []int `json:"defaultmapseeds"`
-	DefaultMapSeedsPickType int   `json:"defaultmapspicktype"`
+	ChangeMapSeed    bool  `json:"changemapseed"`
+	MapSeeds         []int `json:"mapseeds"`
+	MapSeedsPickType int   `json:"mapspicktype"`
 
 	// Host name.
-	DefaultChangeHostName bool   `json:"defaultchangehostname"`
-	DefaultHostName       string `json:"defaulthostname"`
+	ChangeHostName bool   `json:"changehostname"`
+	HostName       string `json:"hostname"`
 
 	// Warning chat messages.
-	DefaultChatMsgEnable bool   `json:"defaultchatmsgenable"`
-	DefaultChatMsg       string `json:"defaultchatmsg"`
-	DefaultChatMsgAmount int    `json:"defaultchatmsgamount"`
+	ChatMsgEnable bool   `json:"chatmsgenable"`
+	ChatMsg       string `json:"chatmsg"`
+	ChatMsgAmount int    `json:"chatmsgamount"`
 
 	Servers []Server `json:"servers"`
 }
 
-// Sets config's default values.
+// Sets config's  values.
 func (cfg *Config) SetDefaults() {
 	cfg.DebugLevel = 1
 
-	cfg.DefaultPathToServerFiles = "/home/container/server/rust"
+	cfg.PathToServerFiles = "/home/container/server/rust"
 
-	cfg.DefaultTimezone = "America/Chicago"
-	cfg.DefaultWipeTime = ""
+	cfg.Timezone = "America/Chicago"
+	cfg.WipeTime = ""
 
-	cfg.DefaultDeleteMap = true
-	cfg.DefaultDeleteBP = true
-	cfg.DefaultDeletePD = true
+	cfg.DeleteMap = true
+	cfg.DeleteBP = true
+	cfg.DeletePD = true
 
-	cfg.DefaultChangeMapSeed = false
-	cfg.DefaultMapSeedsPickType = 1
+	cfg.ChangeMapSeed = false
+	cfg.MapSeedsPickType = 1
 
-	cfg.DefaultChangeHostName = true
-	cfg.DefaultHostName = "Vanilla | FULL WIPE {wipetime_one}"
+	cfg.ChangeHostName = true
+	cfg.HostName = "Vanilla | FULL WIPE {wipetime_one}"
 
-	cfg.DefaultChatMsgEnable = true
-	cfg.DefaultChatMsgAmount = 5
-	cfg.DefaultChatMsg = "Wiping server in {seconds} seconds. Please join back!"
+	cfg.ChatMsgEnable = true
+	cfg.ChatMsgAmount = 5
+	cfg.ChatMsg = "Wiping server in {seconds} seconds. Please join back!"
 }
