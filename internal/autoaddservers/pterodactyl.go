@@ -43,16 +43,10 @@ type ServerListResp struct {
 			Egg        int         `json:"egg"`
 			Pack       interface{} `json:"pack"`
 			Container  struct {
-				StartupCommand string `json:"startup_command"`
-				Image          string `json:"image"`
-				Installed      bool   `json:"installed"`
-				Environment    struct {
-					ServerJarfile   string `json:"SERVER_JARFILE"`
-					VanillaVersion  string `json:"VANILLA_VERSION"`
-					Startup         string `json:"STARTUP"`
-					PServerLocation string `json:"P_SERVER_LOCATION"`
-					PServerUUID     string `json:"P_SERVER_UUID"`
-				} `json:"environment"`
+				StartupCommand string      `json:"startup_command"`
+				Image          string      `json:"image"`
+				Installed      bool        `json:"installed"`
+				Environment    interface{} `json:"environment"`
 			} `json:"container"`
 			UpdatedAt     time.Time `json:"updated_at"`
 			CreatedAt     time.Time `json:"created_at"`
