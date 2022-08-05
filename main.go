@@ -48,6 +48,12 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 			do_wipe = true
 		}
 
+		// See if we need to do a startup/first wipe.
+		if srv.WipeFirst && !data.InternalData.FirstWiped {
+			do_wipe = true
+			data.InternalData.FirstWiped = true
+		}
+
 		// Otherwise, assume weekly. Check if we need to wipe.
 		if uint8(week_day) == data.WipeDay && uint8(hour) == data.WipeHour && uint8(min) == data.WipeHour {
 			// Check if we're doing bi-weekly.
@@ -67,6 +73,7 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 		// Check if we need to wipe.
 		if do_wipe {
+
 			// Process map seeds.
 			if data.ChangeMapSeeds {
 				wipe.ProcessSeeds(&data, srv.UUID)

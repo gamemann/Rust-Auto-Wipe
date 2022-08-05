@@ -48,6 +48,9 @@ type Server struct {
 	// Warning chat messages.
 	MergeWarnings   *bool             `json:"mergewarnings"`
 	WarningMessages *[]WarningMessage `json:"warningmessages"`
+
+	// Extras (e.g. development testing, etc.).
+	WipeFirst bool `json:"wipefirst"`
 }
 
 type Config struct {

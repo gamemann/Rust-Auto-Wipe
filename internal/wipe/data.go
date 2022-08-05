@@ -13,6 +13,7 @@ type Internal struct {
 	LatestVersion uint64
 	LastDayNum    int
 	LastMonthNum  int
+	FirstWiped    bool
 }
 
 type WarningMessage struct {

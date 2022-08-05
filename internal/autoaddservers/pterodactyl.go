@@ -80,6 +80,7 @@ type ServerListResp struct {
 					RAW_Hostname          *string `json:"RAW_HOSTNAME"`
 					RAW_MergeWarnings     *string `json:"RAW_MERGEWARNINGS"`
 					RAW_WarningMessages   *string `json:"RAW_WARNINGMESSAGES"`
+					RAW_WipeFirst         *string `json:"RAW_WIPEFIRST"`
 				} `json:"environment"`
 			} `json:"container"`
 			UpdatedAt time.Time `json:"updated_at"`
@@ -261,6 +262,11 @@ func AddServers(cfg *config.Config) error {
 			// Merge warnings override.
 			if env.RAW_MergeWarnings != nil {
 				*srv.MergeWarnings, _ = strconv.ParseBool(*env.RAW_MergeWarnings)
+			}
+
+			// Wipe first override.
+			if env.RAW_WipeFirst != nil {
+				srv.WipeFirst, _ = strconv.ParseBool(*env.RAW_WipeFirst)
 			}
 
 			// Warning messages override (another special case).
