@@ -2,19 +2,15 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 )
 
 // Reads a config file based off of the file name (string) and returns a Config struct.
-func (cfg *Config) LoadConfig(path string) bool {
+func (cfg *Config) LoadConfig(path string) error {
 	file, err := os.Open(path)
 
 	if err != nil {
-		fmt.Println("[ERR] Cannot open config file.")
-		fmt.Println(err)
-
-		return false
+		return err
 	}
 
 	defer file.Close()
@@ -26,20 +22,10 @@ func (cfg *Config) LoadConfig(path string) bool {
 	_, err = file.Read(data)
 
 	if err != nil {
-		fmt.Println("[ERR] Cannot read config file.")
-		fmt.Println(err)
-
-		return false
+		return err
 	}
 
 	err = json.Unmarshal([]byte(data), cfg)
 
-	if err != nil {
-		fmt.Println("[ERR] Cannot parse JSON Data.")
-		fmt.Println(err)
-
-		return false
-	}
-
-	return true
+	return err
 }
