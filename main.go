@@ -80,8 +80,14 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 				wipe.ProcessHostName(&data, srv.UUID, int(month), int(day), int(week_day))
 			}
 
-			// Process files.
+			// We should stop the server (To Do: Implement something to check if server is running and force kill if so).
+			wipe.StopServer(&data, srv.UUID)
+
+			// Process and delete files.
 			wipe.ProcessFiles(&data, srv.UUID)
+
+			// Start server back up.
+			wipe.StartServer(&data, srv.UUID)
 		}
 
 		// Update last values.
