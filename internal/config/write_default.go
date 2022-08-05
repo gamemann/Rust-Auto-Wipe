@@ -21,7 +21,7 @@ func (cfg *Config) WriteDefaultsToFile(file string) error {
 		return err
 	}
 
-	data, err := json.Marshal(cfg)
+	data, err := json.MarshalIndent(cfg, "", "   ")
 
 	if err != nil {
 		// Close file.
