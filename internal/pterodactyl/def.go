@@ -5,8 +5,8 @@ type StartupResp struct {
 	Data   []struct {
 		Object     string `json:"object"`
 		Attributes struct {
-			EnvVariable string `json:"env_variable"`
-			SrvValue    string `json:"server_value"`
+			Env_Variable string `json:"env_variable"`
+			Srv_Value    string `json:"server_value"`
 		} `json:"attributes"`
 	} `json:"data"`
 }
@@ -16,19 +16,14 @@ type ListFilesResp struct {
 	Data   []struct {
 		Object     string `json:"object"`
 		Attributes struct {
-			Name   string `json:"name"`
-			IsFile bool   `json:"isfile"`
+			Name    string `json:"name"`
+			Is_File bool   `json:"isfile"`
 		} `json:"attributes"`
 	} `json:"data"`
 }
 
 type SendCmdReq struct {
 	Command string `json:"command"`
-}
-
-type UpdateVarReq struct {
-	Key string `json:"key"`
-	Val string `json:"value"`
 }
 
 type SendPowerCmdReq struct {

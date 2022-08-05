@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func SendAPIRequest(url string, token string, request_type string, request_endpoint string, post_data map[string]string) (string, int, error) {
+func SendAPIRequest(url string, token string, request_type string, request_endpoint string, form_data map[string]string) (string, int, error) {
 	// Initialize data and return code (status code).
 	d := ""
 	rc := -1
@@ -34,7 +34,7 @@ func SendAPIRequest(url string, token string, request_type string, request_endpo
 	// Check to see if we need to send post data.
 	if request_type == "POST" {
 		// Set POST data.
-		for key, value := range post_data {
+		for key, value := range form_data {
 			req.PostForm.Add(key, value)
 		}
 	}
