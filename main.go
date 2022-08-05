@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gamemann/Rust-Auto-Wipe/internal/autoaddservers"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/wipe"
 )
@@ -140,6 +141,11 @@ func main() {
 
 	// Attempt to read config.
 	err := cfg.LoadConfig(*configFile)
+
+	// See if we want to automatically add servers.
+	if cfg.AutoAddServers {
+		autoaddservers.AddServers(&cfg)
+	}
 
 	// If we have no config, create the file with the defaults.
 	if err != nil {
