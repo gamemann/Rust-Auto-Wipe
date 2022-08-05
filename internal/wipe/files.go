@@ -96,7 +96,7 @@ func ProcessFiles(data *Data, UUID string) bool {
 	}
 
 	// Prepare to delete files.
-	var post_data map[string]interface{}
+	post_data := make(map[string]interface{})
 	post_data["root"] = data.PathToServerFiles
 	post_data["files"] = files_to_delete
 

@@ -58,7 +58,7 @@ func ProcessSeeds(data *Data, UUID string) bool {
 	next_seed := GetNextSeed(data, cur_seed)
 
 	// Now convert to proper POST data.
-	var post_data map[string]interface{}
+	post_data := make(map[string]interface{})
 	post_data["key"] = "WORLD_SEED"
 	post_data["value"] = strconv.Itoa(next_seed)
 

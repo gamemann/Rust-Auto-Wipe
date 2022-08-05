@@ -15,7 +15,7 @@ func ProcessHostName(data *Data, UUID string, month int, day int, week_day int) 
 	format.FormatString(&hostname, month, day, week_day, 0, 0, 0)
 
 	// Now convert to proper POST data.
-	var post_data map[string]interface{}
+	post_data := make(map[string]interface{})
 	post_data["key"] = "HOSTNAME"
 	post_data["value"] = hostname
 
