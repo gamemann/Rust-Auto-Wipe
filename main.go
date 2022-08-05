@@ -34,7 +34,6 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 		min := time.Now().Minute()
 
 		new_month := false
-		new_week := false
 
 		do_wipe := false
 
@@ -45,11 +44,6 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 		if new_month && data.WipeMonthly {
 			do_wipe = true
-		}
-
-		// First check special options.
-		if new_week && data.WipeBiweekly {
-
 		}
 
 		// Otherwise, assume weekly. Check if we need to wipe.
