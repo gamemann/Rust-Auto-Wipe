@@ -6,6 +6,8 @@ type WarningMessage struct {
 }
 
 type Server struct {
+	Enabled bool `json:"enabled"`
+
 	// Server ID from Pterodactyl.
 	UUID string `json:"uuid"`
 

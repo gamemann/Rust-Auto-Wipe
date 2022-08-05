@@ -158,6 +158,7 @@ func main() {
 		fmt.Println("WARNING - No config file found. Created config file at " + *configFile + " with defaults.")
 	}
 
+	// If we don't have any servers, what's the point?
 	if len(cfg.Servers) < 1 {
 		fmt.Println("[ERR] No servers found.")
 
@@ -166,6 +167,12 @@ func main() {
 
 	// Loop through each server and execute Go routine.
 	for i, srv := range cfg.Servers {
+		// Check if we're enabled.
+		if !srv.Enabled {
+			continue
+		}
+
+		// Spawn Go routine.
 		go srv_handler(&cfg, &srv, i)
 	}
 
