@@ -27,7 +27,8 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 	for true {
 		// We need to create our own time management.
 		month := time.Now().Month()
-		day := time.Now().Weekday()
+		week_day := time.Now().Weekday()
+		day := time.Now().Day()
 		hour := time.Now().Hour()
 		min := time.Now().Minute()
 
@@ -51,7 +52,7 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 		}
 
 		// Otherwise, assume weekly. Check if we need to wipe.
-		if uint8(day) == data.WipeDay && uint8(hour) == data.WipeHour && uint8(min) == data.WipeHour {
+		if uint8(week_day) == data.WipeDay && uint8(hour) == data.WipeHour && uint8(min) == data.WipeHour {
 			// Check if we're doing bi-weekly.
 			if data.WipeBiweekly {
 				// Flip a switch.
@@ -70,17 +71,21 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 		// Check if we need to wipe.
 		if do_wipe {
 			// Process map seeds.
-			wipe.ProcessSeeds(&data, srv.UUID)
+			if data.ChangeMapSeeds {
+				wipe.ProcessSeeds(&data, srv.UUID)
+			}
 
 			// Process host name.
-			wipe.ProcessHostName(&data, srv.UUID)
+			if data.ChangeHostName {
+				wipe.ProcessHostName(&data, srv.UUID, int(month), int(day), int(week_day))
+			}
 
 			// Process files.
 			wipe.ProcessFiles(&data, srv.UUID)
 		}
 
 		// Update last values.
-		*last_day_num = int(day)
+		*last_day_num = int(week_day)
 		*last_month_num = int(month)
 
 		time.Sleep(time.Duration(time.Second))
