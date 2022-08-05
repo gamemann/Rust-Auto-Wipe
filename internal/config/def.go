@@ -9,8 +9,10 @@ type Server struct {
 	UUID string `json:"uuid"`
 
 	// Wipe date/times.
-	Timezone *string `json:"timezone"`
-	WipeTime *string `json:"wipetime"`
+	Timezone     *string `json:"timezone"`
+	WipeTime     *string `json:"wipetime"`
+	WipeMonthly  *bool   `json:"wipemonthly"`
+	WipeBiweekly *bool   `json:"wipebiweekly"`
 
 	// Files/data that should be deleted.
 	DeleteMap *bool `json:"deletemap"`
@@ -51,8 +53,10 @@ type Config struct {
 	PathToServerFiles string `json:"pathtoserverfiles"`
 
 	// Wipe date times.
-	Timezone string `json:"timezone"`
-	WipeTime string `json:"wipetime"`
+	Timezone     string `json:"timezone"`
+	WipeTime     string `json:"wipetime"`
+	WipeMonthly  bool   `json:"wipemonthly"`
+	WipeBiweekly bool   `json:"wipebiweekly"`
 
 	// Files/data that should be deleted.
 	DeleteMap bool `json:"deletemap"`
@@ -83,7 +87,9 @@ func (cfg *Config) SetDefaults() {
 	cfg.PathToServerFiles = "/home/container/server/rust"
 
 	cfg.Timezone = "America/Chicago"
-	cfg.WipeTime = ""
+	cfg.WipeTime = "Thursday 12:00"
+	cfg.WipeMonthly = false
+	cfg.WipeBiweekly = false
 
 	cfg.DeleteMap = true
 	cfg.DeleteBP = true

@@ -10,9 +10,11 @@ import (
 )
 
 type Data struct {
-	WipeDay  uint8 // 0 - 6 (Monday -> Sunday).
-	WipeHour uint8 // 0 - 24.
-	WipeMin  uint8 // 0 - 60.
+	WipeDay      uint8 // 0 - 6 (Sunday -> Saturday).
+	WipeHour     uint8 // 0 - 24.
+	WipeMin      uint8 // 0 - 60.
+	WipeMonthly  bool
+	WipeBiweekly bool
 
 	TimeZone string
 
@@ -61,6 +63,24 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	if srv.WipeTime != nil && len(*srv.WipeTime) > 0 {
 		wipetime = *srv.WipeTime
 	}
+
+	// Check for wipe monthly override.
+	wipemonthly := cfg.WipeMonthly
+
+	if srv.WipeMonthly != nil {
+		wipemonthly = *srv.WipeMonthly
+	}
+
+	data.WipeMonthly = wipemonthly
+
+	// Check for wipe biweekly override.
+	wipebiweekly := cfg.WipeBiweekly
+
+	if srv.WipeBiweekly != nil {
+		wipebiweekly = *srv.WipeBiweekly
+	}
+
+	data.WipeBiweekly = wipebiweekly
 
 	// Check for delete map override.
 	deletemap := cfg.DeleteMap
