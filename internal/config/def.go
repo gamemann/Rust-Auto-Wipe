@@ -1,9 +1,5 @@
 package config
 
-type Internal struct {
-	LatestVersion uint64
-}
-
 type Server struct {
 	// Server ID from Pterodactyl.
 	UUID string `json:"uuid"`
@@ -38,9 +34,6 @@ type Server struct {
 	APIURL     *string `json:"apiurl"`
 	APIToken   *string `json:"apitoken"`
 	DebugLevel *int    `json:"debuglevel"`
-
-	// Internal data for server handler.
-	Data Internal
 }
 
 type Config struct {

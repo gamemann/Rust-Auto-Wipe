@@ -9,6 +9,12 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 )
 
+type Internal struct {
+	LatestVersion uint64
+	LastDayNum    int
+	LastMonthNum  int
+}
+
 type Data struct {
 	WipeDay      uint8 // 0 - 6 (Sunday -> Saturday).
 	WipeHour     uint8 // 0 - 24.
@@ -40,6 +46,8 @@ type Data struct {
 	APIURL     string
 	APIToken   string
 	DebugLevel int
+
+	InternalData Internal
 }
 
 func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
