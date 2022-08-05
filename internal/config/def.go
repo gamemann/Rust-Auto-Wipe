@@ -1,5 +1,10 @@
 package config
 
+type WarningMessage struct {
+	WarningTime uint   `json:"warningtime"`
+	Message     string `json:"message"`
+}
+
 type Server struct {
 	// Server ID from Pterodactyl.
 	UUID string `json:"uuid"`
@@ -39,9 +44,8 @@ type Server struct {
 	HostName       *string `json:"hostname"`
 
 	// Warning chat messages.
-	ChatMsgEnable *bool   `json:"chatmsgenable"`
-	ChatMsg       *string `json:"chatmsg"`
-	ChatMsgAmount *int    `json:"chatmsgamount"`
+	MergeWarnings   *bool             `json:"mergewarnings"`
+	WarningMessages *[]WarningMessage `json:"warningmessages"`
 }
 
 type Config struct {
@@ -79,9 +83,8 @@ type Config struct {
 	HostName       string `json:"hostname"`
 
 	// Warning chat messages.
-	ChatMsgEnable bool   `json:"chatmsgenable"`
-	ChatMsg       string `json:"chatmsg"`
-	ChatMsgAmount int    `json:"chatmsgamount"`
+	MergeWarnings   bool             `json:"mergewarnings"`
+	WarningMessages []WarningMessage `json:"warningmessages"`
 
 	Servers []Server `json:"servers"`
 }
@@ -112,7 +115,13 @@ func (cfg *Config) SetDefaults() {
 	cfg.ChangeHostName = true
 	cfg.HostName = "Vanilla | FULL WIPE {month}/{day}"
 
-	cfg.ChatMsgEnable = true
-	cfg.ChatMsgAmount = 5
-	cfg.ChatMsg = "Wiping server in {seconds_left} seconds. Please join back!"
+	// Warn each second for the last 10 seconds before the wipe.
+	for i := 1; i <= 10; i++ {
+		var warning WarningMessage
+
+		warning.Message = "Wiping server in {seconds_left} seconds. Please join back!"
+		warning.WarningTime = uint(i)
+
+		cfg.WarningMessages = append(cfg.WarningMessages)
+	}
 }

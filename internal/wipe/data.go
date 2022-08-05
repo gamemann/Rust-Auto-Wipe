@@ -15,7 +15,18 @@ type Internal struct {
 	LastMonthNum  int
 }
 
+type WarningMessage struct {
+	WarningTime uint
+	Message     string
+}
+
 type Data struct {
+	APIURL     string
+	APIToken   string
+	DebugLevel int
+
+	PathToServerFiles string
+
 	WipeDay      uint8 // 0 - 6 (Sunday -> Saturday).
 	WipeHour     uint8 // 0 - 24.
 	WipeMin      uint8 // 0 - 60.
@@ -44,15 +55,8 @@ type Data struct {
 	HostName       string
 	NextHostName   string
 
-	ChatMsgEnable bool
-	ChatMsgAmount uint
-	ChatMsg       string
-
-	APIURL     string
-	APIToken   string
-	DebugLevel int
-
-	PathToServerFiles string
+	MergeWarnings   bool
+	WarningMessages []WarningMessage
 
 	InternalData Internal
 }
@@ -62,6 +66,42 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	if srv == nil {
 		return errors.New("Could not find server at index.")
 	}
+
+	// Check for API URL override.
+	apiurl := cfg.APIURL
+
+	if srv.APIURL != nil {
+		apiurl = *srv.APIURL
+	}
+
+	data.APIURL = apiurl
+
+	// Check for API token override.
+	apitoken := cfg.APIToken
+
+	if srv.APIToken != nil {
+		apitoken = *srv.APIToken
+	}
+
+	data.APIToken = apitoken
+
+	// Check for debug level override.
+	debuglevel := cfg.DebugLevel
+
+	if srv.DebugLevel != nil {
+		debuglevel = *srv.DebugLevel
+	}
+
+	data.DebugLevel = debuglevel
+
+	// Check for path to server files override.
+	pathtoserverfiles := cfg.PathToServerFiles
+
+	if srv.PathToServerFiles != nil {
+		pathtoserverfiles = *srv.PathToServerFiles
+	}
+
+	data.PathToServerFiles = pathtoserverfiles
 
 	// Check for time zone override.
 	timezone := cfg.Timezone
@@ -169,11 +209,27 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 
 	data.ChangeMapSeeds = changemapseeds
 
+	// Check for map seeds merge in server-specific settings.
+	mapseedsmerge := false
+
+	if srv.MapSeedsMerge != nil {
+		mapseedsmerge = *srv.MapSeedsMerge
+	}
+
+	data.MapSeedsMerge = mapseedsmerge
+
 	// Check for map seeds override.
 	mapseeds := cfg.MapSeeds
 
 	if srv.MapSeeds != nil {
-		mapseeds = *srv.MapSeeds
+		if mapseedsmerge {
+			// Merge seeds (CFG and server specific).
+			for _, seed := range *srv.MapSeeds {
+				mapseeds = append(mapseeds, seed)
+			}
+		} else {
+			mapseeds = *srv.MapSeeds
+		}
 	}
 
 	data.MapSeeds = mapseeds
@@ -186,15 +242,6 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	}
 
 	data.MapSeedPickType = uint(mapseedspicktype)
-
-	// Check for map seeds merge in server-specific settings.
-	mapseedsmerge := false
-
-	if srv.MapSeedsMerge != nil {
-		mapseedsmerge = *srv.MapSeedsMerge
-	}
-
-	data.MapSeedsMerge = mapseedsmerge
 
 	// Check for change host name override.
 	changehostname := cfg.ChangeHostName
@@ -214,68 +261,52 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 
 	data.HostName = hostname
 
-	// Check for chat message enable override.
-	chatmsgenable := cfg.ChatMsgEnable
+	// Check for warnings merge override.
+	merge_warnings := cfg.MergeWarnings
 
-	if srv.ChatMsgEnable != nil {
-		chatmsgenable = *srv.ChatMsgEnable
+	if srv.MergeWarnings != nil {
+		merge_warnings = *srv.MergeWarnings
 	}
 
-	data.ChatMsgEnable = chatmsgenable
+	data.MergeWarnings = merge_warnings
 
-	// Check for chat message amount override.
-	chatmsgamount := cfg.ChatMsgAmount
+	// Check for warnings override.
+	var warning_messages []WarningMessage
 
-	if srv.ChatMsgAmount != nil {
-		chatmsgamount = *srv.ChatMsgAmount
+	// Since this is a custom structure, we have to use somewhat sloppy code :(
+	for _, tmp := range cfg.WarningMessages {
+		var warning WarningMessage
+
+		warning.WarningTime = tmp.WarningTime
+		warning.Message = tmp.Message
 	}
 
-	data.ChatMsgAmount = uint(chatmsgamount)
+	// Check if we need to merge warning messages or override.
+	if srv.WarningMessages != nil {
+		if merge_warnings {
+			for _, tmp := range *srv.WarningMessages {
+				var warning WarningMessage
+				warning.Message = tmp.Message
+				warning.WarningTime = tmp.WarningTime
 
-	// Check for chat message override.
-	chatmsg := cfg.ChatMsg
+				warning_messages = append(warning_messages, warning)
+			}
+		} else {
+			// Wipe messages and override.
+			warning_messages = nil
 
-	if srv.ChatMsg != nil {
-		chatmsg = *srv.ChatMsg
+			for _, tmp := range *srv.WarningMessages {
+				var warning WarningMessage
+				warning.Message = tmp.Message
+				warning.WarningTime = tmp.WarningTime
+
+				warning_messages = append(warning_messages, warning)
+			}
+
+		}
 	}
 
-	data.ChatMsg = chatmsg
-
-	// Check for API URL override.
-	apiurl := cfg.APIURL
-
-	if srv.APIURL != nil {
-		apiurl = *srv.APIURL
-	}
-
-	data.APIURL = apiurl
-
-	// Check for API token override.
-	apitoken := cfg.APIToken
-
-	if srv.APIToken != nil {
-		apitoken = *srv.APIToken
-	}
-
-	data.APIToken = apitoken
-
-	// Check for debug level override.
-	debuglevel := cfg.DebugLevel
-
-	if srv.DebugLevel != nil {
-		debuglevel = *srv.DebugLevel
-	}
-
-	data.DebugLevel = debuglevel
-
-	// Check for path to server files override.
-	pathtoserverfiles := cfg.PathToServerFiles
-
-	if srv.PathToServerFiles != nil {
-		pathtoserverfiles = *srv.PathToServerFiles
-	}
-
-	data.PathToServerFiles = pathtoserverfiles
+	data.WarningMessages = warning_messages
 
 	// Parse wipe time.
 	info := strings.Split(wipetime, " ")
