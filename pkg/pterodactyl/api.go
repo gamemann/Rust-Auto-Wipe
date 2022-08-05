@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -27,7 +28,7 @@ func SendAPIRequest(url string, token string, request_type string, request_endpo
 		}
 
 		// Read byte array into IO reader.
-		_, err = post_body.Read(j)
+		post_body = strings.NewReader(string(j))
 
 		if err != nil {
 			return d, rc, err
