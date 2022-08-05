@@ -85,16 +85,32 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 			wipe.StopServer(&data, srv.UUID)
 
 			// Wait until the server is confirmed stopped.
+			i := 0
+
 			for true {
 				// Check if the server is running and when it is confirmed stop, break the loop.
 				running, err := wipe.IsServerRunning(&data, srv.UUID)
 
+				// Check for error. Otherwise, break if we're not running.
 				if err != nil {
 					fmt.Println(err)
 				} else {
 					if !running {
 						break
 					}
+				}
+
+				// Increment i.
+				i++
+
+				// Kill the server after 15 seconds.
+				if i > 15 {
+					wipe.KillServer(&data, srv.UUID)
+				}
+
+				// Give up after a minute.
+				if i > 60 {
+					break
 				}
 
 				// Sleep every second to avoid unnecessary CPU cycles.
