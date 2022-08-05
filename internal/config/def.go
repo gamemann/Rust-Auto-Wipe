@@ -1,6 +1,11 @@
 package config
 
+type Internal struct {
+	LatestVersion uint64
+}
+
 type Server struct {
+	// Server ID from Pterodactyl.
 	UUID string `json:"uuid"`
 
 	// Wipe date/times.
@@ -27,13 +32,17 @@ type Server struct {
 	ChatMsg       *string `json:"chatmsg"`
 	ChatMsgAmount *int    `json:"chatmsgamount"`
 
-	// API overrides.
-	APIURLOverride   *string `json:"apiurloverride"`
-	APITokenOverride *string `json:"apitokenoverride"`
+	// API/Debug.
+	APIURL     *string `json:"apiurl"`
+	APIToken   *string `json:"apitoken"`
+	DebugLevel *int    `json:"debuglevel"`
+
+	// Internal data for server handler.
+	Data Internal
 }
 
 type Config struct {
-	// Pterodactyl API.
+	// Pterodactyl API (there are overrides for these).
 	APIURL     string `json:"apiurl"`
 	APIToken   string `json:"apitoken"`
 	DebugLevel int    `json:"debuglevel"`
@@ -84,7 +93,7 @@ func (cfg *Config) SetDefaults() {
 	cfg.DefaultMapSeedsPickType = 1
 
 	cfg.DefaultChangeHostName = true
-	cfg.DefaultHostName = "Vanilla | FULLWIPE {wipetime_one}"
+	cfg.DefaultHostName = "Vanilla | FULL WIPE {wipetime_one}"
 
 	cfg.DefaultChatMsgEnable = true
 	cfg.DefaultChatMsgAmount = 5

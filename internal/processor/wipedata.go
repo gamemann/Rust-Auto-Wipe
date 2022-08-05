@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gamemann/Rust-Auto-Wipe/config"
+	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 )
 
 type WipeData struct {
@@ -35,14 +35,12 @@ type WipeData struct {
 	ChatMsgAmount uint
 	ChatMsg       string
 
-	APIURL   string
-	APIToken string
+	APIURL     string
+	APIToken   string
+	DebugLevel int
 }
 
-func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
-	var srv *config.Server
-	srv = &cfg.Servers[idx]
-
+func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) error {
 	// Make sure we have a valid server. This should never be the case since the array is preallocated to my understanding (and therefore never nil).
 	if srv == nil {
 		return errors.New("Could not find server at index.")
@@ -175,8 +173,8 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
 	// Check for API URL override.
 	apiurl := cfg.APIURL
 
-	if srv.APIURLOverride != nil {
-		apiurl = *srv.APIURLOverride
+	if srv.APIURL != nil {
+		apiurl = *srv.APIURL
 	}
 
 	wipedata.APIURL = apiurl
@@ -184,11 +182,20 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, idx int) error {
 	// Check for API token override.
 	apitoken := cfg.APIToken
 
-	if srv.APITokenOverride != nil {
-		apitoken = *srv.APITokenOverride
+	if srv.APIToken != nil {
+		apitoken = *srv.APIToken
 	}
 
 	wipedata.APIToken = apitoken
+
+	// Check for debug level override.
+	debuglevel := cfg.DebugLevel
+
+	if srv.DebugLevel != nil {
+		debuglevel = *srv.DebugLevel
+	}
+
+	wipedata.DebugLevel = debuglevel
 
 	// Parse wipe time.
 	info := strings.Split(wipetime, " ")

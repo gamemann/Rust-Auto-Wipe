@@ -1,10 +1,33 @@
 package processor
 
-import "math/rand"
+import (
+	"encoding/json"
+	"fmt"
+	"math/rand"
+
+	"github.com/gamemann/Rust-Auto-Wipe/internal/pterodactyl"
+)
 
 // Processes seeds and determines the next seed. Should occur before wipe.
 func (wipedata *WipeData) ProcessSeeds(UUID string) bool {
+	// We first need to retrieve the current variable.
+	d, _, err := pterodactyl.SendAPIRequest(wipedata.APIURL, wipedata.APIToken, "GET", "client/servers/"+UUID+"/startup", nil)
 
+	if err != nil {
+		fmt.Println(err)
+
+		return false
+	}
+
+	var EnvVars pterodactyl.StartupResp
+
+	err = json.Unmarshal([]byte(d), &EnvVars)
+
+	if err != nil {
+		fmt.Println(err)
+
+		return false
+	}
 	return true
 }
 

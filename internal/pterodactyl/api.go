@@ -1,22 +1,19 @@
 package pterodactyl
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/gamemann/Rust-Auto-Wipe/processor"
 )
 
-func SendAPIRequest(wipedata *processor.WipeData, request_type string, request_endpoint string, post_data map[string]string) (string, int, error) {
+func SendAPIRequest(url string, token string, request_type string, request_endpoint string, post_data map[string]string) (string, int, error) {
 	// Initialize data and return code (status code).
 	d := ""
 	rc := -1
 
 	// Compile our URL.
-	urlstr := wipedata.APIURL + "/api/" + request_endpoint
+	urlstr := url + "/api/" + request_endpoint
 
 	// Setup HTTP GET request.
 	client := &http.Client{Timeout: time.Second * 5}
@@ -29,7 +26,7 @@ func SendAPIRequest(wipedata *processor.WipeData, request_type string, request_e
 	}
 
 	// Set Application API token.
-	req.Header.Set("Authorization", "Bearer "+wipedata.APIToken)
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	// Accept only JSON.
 	req.Header.Set("Accept", "application/json")
@@ -67,10 +64,4 @@ func SendAPIRequest(wipedata *processor.WipeData, request_type string, request_e
 	d = string(body)
 
 	return d, rc, nil
-}
-
-func ProcessResponse(data []byte, structure *interface{}) error {
-	err := json.Unmarshal(data, structure)
-
-	return err
 }
