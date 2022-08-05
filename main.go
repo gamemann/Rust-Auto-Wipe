@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -82,6 +83,23 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 			// We should stop the server (To Do: Implement something to check if server is running and force kill if so).
 			wipe.StopServer(&data, srv.UUID)
+
+			// Wait until the server is confirmed stopped.
+			for true {
+				// Check if the server is running and when it is confirmed stop, break the loop.
+				running, err := wipe.IsServerRunning(&data, srv.UUID)
+
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					if !running {
+						break
+					}
+				}
+
+				// Sleep every second to avoid unnecessary CPU cycles.
+				time.Sleep(time.Duration(time.Second))
+			}
 
 			// Process and delete files.
 			wipe.ProcessFiles(&data, srv.UUID)
