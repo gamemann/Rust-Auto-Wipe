@@ -15,7 +15,7 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 	// We need to retrieve the wipe data information first.
 	var data wipe.Data
 
-	// For readability, define pointer to last week number here.
+	// For readability, define pointer to last week/day numbers here.
 	last_day_num := &data.InternalData.LastDayNum
 	last_month_num := &data.InternalData.LastMonthNum
 
