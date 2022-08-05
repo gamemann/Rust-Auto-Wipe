@@ -1,4 +1,4 @@
-package processor
+package wipe
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 )
 
-type WipeData struct {
+type Data struct {
 	WipeDay  uint8 // 0 - 6 (Monday -> Sunday).
 	WipeHour uint8 // 0 - 24.
 	WipeMin  uint8 // 0 - 60.
@@ -40,7 +40,7 @@ type WipeData struct {
 	DebugLevel int
 }
 
-func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) error {
+func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	// Make sure we have a valid server. This should never be the case since the array is preallocated to my understanding (and therefore never nil).
 	if srv == nil {
 		return errors.New("Could not find server at index.")
@@ -53,7 +53,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		timezone = *srv.Timezone
 	}
 
-	wipedata.TimeZone = timezone
+	data.TimeZone = timezone
 
 	// Check for wipe time override.
 	wipetime := cfg.DefaultWipeTime
@@ -69,7 +69,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		deletemap = *srv.DeleteMap
 	}
 
-	wipedata.DeleteMap = deletemap
+	data.DeleteMap = deletemap
 
 	// Check for delete blueprint override.
 	deletebp := cfg.DefaultDeleteBP
@@ -78,7 +78,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		deletebp = *srv.DeleteBP
 	}
 
-	wipedata.DeleteBP = deletebp
+	data.DeleteBP = deletebp
 
 	// Check for delete player data override.
 	deletepd := cfg.DefaultDeletePD
@@ -87,7 +87,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		deletepd = *srv.DeletePD
 	}
 
-	wipedata.DeletePD = deletepd
+	data.DeletePD = deletepd
 
 	// Check for change map seed override.
 	changemapseeds := cfg.DefaultChangeMapSeed
@@ -96,7 +96,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		changemapseeds = *srv.ChangeMapSeeds
 	}
 
-	wipedata.ChangeMapSeeds = changemapseeds
+	data.ChangeMapSeeds = changemapseeds
 
 	// Check for map seeds override.
 	mapseeds := cfg.DefaultMapSeeds
@@ -105,7 +105,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		mapseeds = *srv.MapSeeds
 	}
 
-	wipedata.MapSeeds = mapseeds
+	data.MapSeeds = mapseeds
 
 	// Check for map seeds pick type override.
 	mapseedspicktype := cfg.DefaultMapSeedsPickType
@@ -114,7 +114,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		mapseedspicktype = *srv.MapSeedsPickType
 	}
 
-	wipedata.MapSeedPickType = uint(mapseedspicktype)
+	data.MapSeedPickType = uint(mapseedspicktype)
 
 	// Check for map seeds merge in server-specific settings.
 	mapseedsmerge := false
@@ -123,7 +123,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		mapseedsmerge = *srv.MapSeedsMerge
 	}
 
-	wipedata.MapSeedsMerge = mapseedsmerge
+	data.MapSeedsMerge = mapseedsmerge
 
 	// Check for change host name override.
 	changehostname := cfg.DefaultChangeHostName
@@ -132,7 +132,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		changehostname = *srv.ChangeHostName
 	}
 
-	wipedata.ChangeHostName = changehostname
+	data.ChangeHostName = changehostname
 
 	// Check for host name override.
 	hostname := cfg.DefaultHostName
@@ -141,7 +141,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		hostname = *srv.HostName
 	}
 
-	wipedata.HostName = hostname
+	data.HostName = hostname
 
 	// Check for chat message enable override.
 	chatmsgenable := cfg.DefaultChatMsgEnable
@@ -150,7 +150,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		chatmsgenable = *srv.ChatMsgEnable
 	}
 
-	wipedata.ChatMsgEnable = chatmsgenable
+	data.ChatMsgEnable = chatmsgenable
 
 	// Check for chat message amount override.
 	chatmsgamount := cfg.DefaultChatMsgAmount
@@ -159,7 +159,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		chatmsgamount = *srv.ChatMsgAmount
 	}
 
-	wipedata.ChatMsgAmount = uint(chatmsgamount)
+	data.ChatMsgAmount = uint(chatmsgamount)
 
 	// Check for chat message override.
 	chatmsg := cfg.DefaultChatMsg
@@ -168,7 +168,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		chatmsg = *srv.ChatMsg
 	}
 
-	wipedata.ChatMsg = chatmsg
+	data.ChatMsg = chatmsg
 
 	// Check for API URL override.
 	apiurl := cfg.APIURL
@@ -177,7 +177,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		apiurl = *srv.APIURL
 	}
 
-	wipedata.APIURL = apiurl
+	data.APIURL = apiurl
 
 	// Check for API token override.
 	apitoken := cfg.APIToken
@@ -186,7 +186,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		apitoken = *srv.APIToken
 	}
 
-	wipedata.APIToken = apitoken
+	data.APIToken = apitoken
 
 	// Check for debug level override.
 	debuglevel := cfg.DebugLevel
@@ -195,7 +195,7 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 		debuglevel = *srv.DebugLevel
 	}
 
-	wipedata.DebugLevel = debuglevel
+	data.DebugLevel = debuglevel
 
 	// Parse wipe time.
 	info := strings.Split(wipetime, " ")
@@ -206,21 +206,21 @@ func (wipedata *WipeData) ProcessData(cfg *config.Config, srv *config.Server) er
 	// Convert day to numberic value from 0 - 6.
 	switch strings.ToLower(day) {
 	case "monday":
-		wipedata.WipeDay = 0
+		data.WipeDay = 0
 	case "tuesday":
-		wipedata.WipeDay = 1
+		data.WipeDay = 1
 	case "wednesday":
-		wipedata.WipeDay = 2
+		data.WipeDay = 2
 	case "thursday":
-		wipedata.WipeDay = 3
+		data.WipeDay = 3
 	case "friday":
-		wipedata.WipeDay = 4
+		data.WipeDay = 4
 	case "saturday":
-		wipedata.WipeDay = 5
+		data.WipeDay = 5
 	case "sunday":
-		wipedata.WipeDay = 6
+		data.WipeDay = 6
 	default:
-		wipedata.WipeDay = 0
+		data.WipeDay = 0
 	}
 
 	td := strings.Split(timeinfo, ":")

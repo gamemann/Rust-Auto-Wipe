@@ -1,4 +1,4 @@
-package processor
+package wipe
 
 import (
 	"encoding/json"
@@ -10,9 +10,9 @@ import (
 )
 
 // Processes seeds and determines the next seed. Should occur before wipe.
-func (wipedata *WipeData) ProcessSeeds(UUID string) bool {
+func ProcessSeeds(data *Data, UUID string) bool {
 	// We first need to retrieve the current variable.
-	d, _, err := pterodactyl.SendAPIRequest(wipedata.APIURL, wipedata.APIToken, "GET", "client/servers/"+UUID+"/startup", nil)
+	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", "client/servers/"+UUID+"/startup", nil)
 
 	if err != nil {
 		fmt.Println(err)
@@ -55,7 +55,7 @@ func (wipedata *WipeData) ProcessSeeds(UUID string) bool {
 	cur_seed := int(curseed64)
 
 	// Now get the next seed using the GetNextSeed() method.
-	next_seed := wipedata.GetNextSeed(cur_seed)
+	next_seed := GetNextSeed(data, cur_seed)
 
 	// Now convert to proper POST data.
 	var post_data map[string]string
@@ -63,7 +63,7 @@ func (wipedata *WipeData) ProcessSeeds(UUID string) bool {
 	post_data["value"] = strconv.Itoa(next_seed)
 
 	// Send API request.
-	d, _, err = pterodactyl.SendAPIRequest(wipedata.APIURL, wipedata.APIToken, "PUT", "client/servers/"+UUID+"/variable", post_data)
+	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", "client/servers/"+UUID+"/variable", post_data)
 
 	if err != nil {
 		fmt.Println(err)
@@ -75,11 +75,11 @@ func (wipedata *WipeData) ProcessSeeds(UUID string) bool {
 }
 
 // Gets the next seed in the array.
-func (wipedata *WipeData) GetNextSeed(curseed int) int {
+func GetNextSeed(data *Data, curseed int) int {
 	// Make new variables for better looking code.
 	seed := -1
-	seeds := wipedata.MapSeeds
-	pick_type := wipedata.MapSeedPickType
+	seeds := data.MapSeeds
+	pick_type := data.MapSeedPickType
 
 	// Check pick type.
 	if pick_type == 1 {

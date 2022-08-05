@@ -8,14 +8,14 @@ import (
 	"time"
 
 	config "github.com/gamemann/Rust-Auto-Wipe/internal/config"
-	"github.com/gamemann/Rust-Auto-Wipe/internal/processor"
+	"github.com/gamemann/Rust-Auto-Wipe/internal/wipe"
 )
 
 func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 	// We need to retrieve the wipe data information first.
-	var wipedata processor.WipeData
+	var data wipe.Data
 
-	wipedata.ProcessData(cfg, srv)
+	wipe.ProcessData(&data, cfg, srv)
 
 	// Create a repeating loop until the two signals are called.
 	for true {
