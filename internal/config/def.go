@@ -54,6 +54,10 @@ type Config struct {
 	APIToken   string `json:"apitoken"`
 	DebugLevel int    `json:"debuglevel"`
 
+	// Auto add servers.
+	AppToken       string `json:"apptoken"`
+	AutoAddServers bool   `json:"autoaddservers"`
+
 	// Paths (e.g. /home/container/server/rust).
 	PathToServerFiles string `json:"pathtoserverfiles"`
 
@@ -99,6 +103,8 @@ func (cfg *Config) SetDefaults() {
 	cfg.WipeTime = "Thursday 12:00"
 	cfg.WipeMonthly = false
 	cfg.WipeBiweekly = false
+
+	cfg.AutoAddServers = false
 
 	cfg.DeleteMap = true
 	cfg.DeleteBP = true
