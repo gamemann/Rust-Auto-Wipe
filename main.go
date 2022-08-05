@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -138,7 +139,23 @@ func main() {
 	cfg.SetDefaults()
 
 	// Attempt to read config.
-	cfg.LoadConfig(*configFile)
+	err := cfg.LoadConfig(*configFile)
+
+	// If we have no config, create the file with the defaults.
+	if err != nil {
+		// If there's an error and it contains "no such file", try to create the file with defaults.
+		if strings.Contains(err.Error(), "no such file") {
+			cfg.WriteDefaultsToFile(*configFile)
+		}
+
+		fmt.Println("WARNING - No config file found. Created config file at " + *configFile + " with defaults.")
+	}
+
+	if len(cfg.Servers) < 1 {
+		fmt.Println("[ERR] No servers found.")
+
+		return
+	}
 
 	// Loop through each server and execute Go routine.
 	for i, srv := range cfg.Servers {
