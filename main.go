@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	config "github.com/gamemann/Rust-Auto-Wipe/internal/config"
+	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/wipe"
 )
 
@@ -17,8 +17,9 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 	wipe.ProcessData(&data, cfg, srv)
 
-	// Create a repeating loop until the two signals are called.
+	// Create a repeating loop until the two signals are called in the main function.
 	for true {
+
 		time.Sleep(time.Duration(time.Second))
 	}
 }
