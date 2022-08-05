@@ -24,9 +24,14 @@ type Data struct {
 
 	TimeZone string
 
-	DeleteMap bool
-	DeleteBP  bool
-	DeleteSv  bool
+	DeleteMap        bool
+	DeleteBP         bool
+	DeleteDeaths     bool
+	DeleteStates     bool
+	DeleteIdentities bool
+	DeleteTokens     bool
+
+	DeleteSv bool
 
 	ChangeMapSeeds  bool
 	MapSeeds        []int
@@ -109,6 +114,42 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	}
 
 	data.DeleteBP = deletebp
+
+	// Check for delete deaths override.
+	delete_deaths := cfg.DeleteDeaths
+
+	if srv.DeleteDeaths != nil {
+		delete_deaths = *srv.DeleteDeaths
+	}
+
+	data.DeleteDeaths = delete_deaths
+
+	// Check for delete states override.
+	delete_states := cfg.DeleteStates
+
+	if srv.DeleteStates != nil {
+		delete_states = *srv.DeleteStates
+	}
+
+	data.DeleteStates = delete_states
+
+	// Check for delete identities override.
+	delete_identities := cfg.DeleteIdentities
+
+	if srv.DeleteIdentities != nil {
+		delete_identities = *srv.DeleteIdentities
+	}
+
+	data.DeleteIdentities = delete_identities
+
+	// Check for delete tokens override.
+	delete_tokens := cfg.DeleteTokens
+
+	if srv.DeleteTokens != nil {
+		delete_tokens = *srv.DeleteTokens
+	}
+
+	data.DeleteTokens = delete_tokens
 
 	// Check for delete player data override.
 	deletesv := cfg.DeleteSv
