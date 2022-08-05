@@ -90,7 +90,7 @@ type Config struct {
 func (cfg *Config) SetDefaults() {
 	cfg.DebugLevel = 1
 
-	cfg.PathToServerFiles = "server/rust"
+	cfg.PathToServerFiles = "/server/rust"
 
 	cfg.Timezone = "America/Chicago"
 	cfg.WipeTime = "Thursday 12:00"
