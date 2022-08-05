@@ -2,7 +2,6 @@ package autoaddservers
 
 import (
 	"encoding/json"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -25,59 +24,66 @@ type ServerListResp struct {
 	Data   []struct {
 		Object     string `json:"object"`
 		Attributes struct {
-			ID          int    `json:"id"`
-			ExternalID  string `json:"external_id"`
-			UUID        string `json:"uuid"`
-			Identifier  string `json:"identifier"`
-			Name        string `json:"name"`
-			Description string `json:"description"`
-			Suspended   bool   `json:"suspended"`
+			ID          int         `json:"id"`
+			ExternalID  interface{} `json:"external_id"`
+			UUID        string      `json:"uuid"`
+			Identifier  string      `json:"identifier"`
+			Name        string      `json:"name"`
+			Description string      `json:"description"`
+			Status      interface{} `json:"status"`
+			Suspended   bool        `json:"suspended"`
 			Limits      struct {
-				Memory  int         `json:"memory"`
-				Swap    int         `json:"swap"`
-				Disk    int         `json:"disk"`
-				Io      int         `json:"io"`
-				CPU     int         `json:"cpu"`
-				Threads interface{} `json:"threads"`
+				Memory      int         `json:"memory"`
+				Swap        int         `json:"swap"`
+				Disk        int         `json:"disk"`
+				Io          int         `json:"io"`
+				CPU         int         `json:"cpu"`
+				Threads     interface{} `json:"threads"`
+				OomDisabled bool        `json:"oom_disabled"`
 			} `json:"limits"`
 			FeatureLimits struct {
 				Databases   int `json:"databases"`
 				Allocations int `json:"allocations"`
 				Backups     int `json:"backups"`
 			} `json:"feature_limits"`
-			User       int         `json:"user"`
-			Node       int         `json:"node"`
-			Allocation int         `json:"allocation"`
-			Nest       int         `json:"nest"`
-			Egg        int         `json:"egg"`
-			Pack       interface{} `json:"pack"`
+			User       int `json:"user"`
+			Node       int `json:"node"`
+			Allocation int `json:"allocation"`
+			Nest       int `json:"nest"`
+			Egg        int `json:"egg"`
 			Container  struct {
-				StartupCommand string      `json:"startup_command"`
-				Image          string      `json:"image"`
-				Installed      bool        `json:"installed"`
-				Environment    interface{} `json:"environment"`
+				StartupCommand string `json:"startup_command"`
+				Image          string `json:"image"`
+				Installed      int    `json:"installed"`
+				Environment    struct {
+					WorldSeed *string `json:"WORLD_SEED"`
+					HostName  *string `json:"HOSTNAME"`
+
+					RAW_Enabled           *string `json:"RAW_ENABLED"`
+					RAW_PathToServerFiles *string `json:"RAW_PATHTOSERVERFILES`
+					RAW_Timezone          *string `json:"RAW_TIMEZONE`
+					RAW_WipeTime          *string `json:"RAW_WIPETIME"`
+					RAW_WipeMonthly       *string `json:"RAW_WIPEMONTHLY"`
+					RAW_WipeBiweekly      *string `json:"RAW_WIPEBIWEEKLY`
+					RAW_DeleteMap         *string `json:"RAW_DELETEMAP`
+					RAW_DeleteBP          *string `json:"RAW_DELETEBP`
+					RAW_DeleteDeaths      *string `json:"RAW_DELETEDEATHS`
+					RAW_DeleteStates      *string `json:"RAW_DELETESTATES`
+					RAW_DeleteIdentities  *string `json:"RAW_DELETEIDENTITIES`
+					RAW_DeleteTokens      *string `json:"RAW_DELETETOKENS"`
+					RAW_DeleteSv          *string `json:"RAW_DELETESV`
+					RAW_ChangeMapSeeds    *string `json:"RAW_CHANGEMAPSEEDS`
+					RAW_MapSeeds          *string `json:"RAW_MAPSEEDS`
+					RAW_MapSeedsPickType  *string `json:"RAW_MAPSEEDSPICKTYPE`
+					RAW_MapSeedsMerge     *string `json:"RAW_MAPSEEDSMERGE`
+					RAW_ChangeHostname    *string `json:"RAW_CHANGEHOSTNAME`
+					RAW_Hostname          *string `json:"RAW_HOSTNAME`
+					RAW_MergeWarnings     *string `json:"RAW_MERGEWARNINGS`
+					RAW_WarningMessages   *string `json:"RAW_WARNINGMESSAGES`
+				} `json:"environment"`
 			} `json:"container"`
-			UpdatedAt     time.Time `json:"updated_at"`
-			CreatedAt     time.Time `json:"created_at"`
-			Relationships struct {
-				Databases struct {
-					Object string `json:"object"`
-					Data   []struct {
-						Object     string `json:"object"`
-						Attributes struct {
-							ID             int       `json:"id"`
-							Server         int       `json:"server"`
-							Host           int       `json:"host"`
-							Database       string    `json:"database"`
-							Username       string    `json:"username"`
-							Remote         string    `json:"remote"`
-							MaxConnections int       `json:"max_connections"`
-							CreatedAt      time.Time `json:"created_at"`
-							UpdatedAt      time.Time `json:"updated_at"`
-						} `json:"attributes"`
-					} `json:"data"`
-				} `json:"databases"`
-			} `json:"relationships"`
+			UpdatedAt time.Time `json:"updated_at"`
+			CreatedAt time.Time `json:"created_at"`
 		} `json:"attributes"`
 	} `json:"data"`
 	Meta struct {
@@ -121,18 +127,13 @@ func AddServers(cfg *config.Config) error {
 			// We must make sure the Rust environmental variables are valid if we're going to add said server.
 			env := &v.Attributes.Container.Environment
 
-			meta_val := reflect.ValueOf(*env).Elem()
-			fld := meta_val.FieldByName("WORLD_SEED")
-
 			// If WORLD_SEED doesn't exist (empty field), don't add server.
-			if fld == (reflect.Value{}) {
+			if env.WorldSeed == nil {
 				continue
 			}
 
-			fld = meta_val.FieldByName("HOSTNAME")
-
 			// If HOSTNAME doesn't exist (empty field), don't add server.
-			if fld == (reflect.Value{}) {
+			if env.HostName == nil {
 				continue
 			}
 
@@ -146,109 +147,78 @@ func AddServers(cfg *config.Config) error {
 
 			/* STARTING ENV OVERRIDES (using the opposite method as above) */
 			// Enabled override.
-			fld = meta_val.FieldByName("RAW_ENABLED")
-
-			if fld != (reflect.Value{}) {
-				srv.Enabled = reflect.Value.Bool(fld)
+			if env.RAW_Enabled != nil {
+				srv.Enabled, _ = strconv.ParseBool(*env.RAW_Enabled)
 			}
 
 			// Path to server files override.
-			fld = meta_val.FieldByName("RAW_PATHTOSERVERFILES")
-
-			if fld != (reflect.Value{}) {
-				*srv.PathToServerFiles = reflect.Value.String(fld)
+			if env.RAW_PathToServerFiles != nil {
+				*srv.PathToServerFiles = *env.RAW_PathToServerFiles
 			}
 
 			// Timezone override.
-			fld = meta_val.FieldByName("RAW_TIMEZONE")
-
-			if fld != (reflect.Value{}) {
-				*srv.Timezone = reflect.Value.String(fld)
+			if env.RAW_Timezone != nil {
+				*srv.Timezone = *env.RAW_Timezone
 			}
 
 			// Wipe time override.
-			fld = meta_val.FieldByName("RAW_WIPETIME")
-
-			if fld != (reflect.Value{}) {
-				*srv.WipeTime = reflect.Value.String(fld)
+			if env.RAW_WipeTime != nil {
+				*srv.WipeTime = *env.RAW_WipeTime
 			}
 
 			// Wipe monthly override.
-			fld = meta_val.FieldByName("RAW_MONTHLY")
-
-			if fld != (reflect.Value{}) {
-				*srv.WipeMonthly = reflect.Value.Bool(fld)
+			if env.RAW_WipeMonthly != nil {
+				*srv.WipeMonthly, _ = strconv.ParseBool(*env.RAW_WipeMonthly)
 			}
 
-			// Wipe bi-weekly override.
-			fld = meta_val.FieldByName("RAW_BIWEEKLY")
-
-			if fld != (reflect.Value{}) {
-				*srv.WipeBiweekly = reflect.Value.Bool(fld)
+			// Wipe biweekly override.
+			if env.RAW_WipeBiweekly != nil {
+				*srv.WipeBiweekly, _ = strconv.ParseBool(*env.RAW_WipeBiweekly)
 			}
 
 			// Delete map override.
-			fld = meta_val.FieldByName("RAW_DELETEMAP")
-
-			if fld != (reflect.Value{}) {
-				*srv.DeleteMap = reflect.Value.Bool(fld)
+			if env.RAW_DeleteMap != nil {
+				*srv.DeleteMap, _ = strconv.ParseBool(*env.RAW_DeleteMap)
 			}
 
 			// Delete blueprints override.
-			fld = meta_val.FieldByName("RAW_DELETEBP")
-
-			if fld != (reflect.Value{}) {
-				*srv.DeleteBP = reflect.Value.Bool(fld)
+			if env.RAW_DeleteBP != nil {
+				*srv.DeleteBP, _ = strconv.ParseBool(*env.RAW_DeleteBP)
 			}
 
 			// Delete deaths override.
-			fld = meta_val.FieldByName("RAW_DELETEDEATHS")
-
-			if fld != (reflect.Value{}) {
-				*srv.DeleteDeaths = reflect.Value.Bool(fld)
+			if env.RAW_DeleteDeaths != nil {
+				*srv.DeleteDeaths, _ = strconv.ParseBool(*env.RAW_DeleteDeaths)
 			}
 
 			// Delete states override.
-			fld = meta_val.FieldByName("RAW_DELETESTATES")
-
-			if fld != (reflect.Value{}) {
-				*srv.DeleteStates = reflect.Value.Bool(fld)
+			if env.RAW_DeleteStates != nil {
+				*srv.DeleteStates, _ = strconv.ParseBool(*env.RAW_DeleteStates)
 			}
 
 			// Delete identities override.
-			fld = meta_val.FieldByName("RAW_DELETEIDENTITIES")
-
-			if fld != (reflect.Value{}) {
-				*srv.DeleteIdentities = reflect.Value.Bool(fld)
+			if env.RAW_DeleteIdentities != nil {
+				*srv.DeleteIdentities, _ = strconv.ParseBool(*env.RAW_DeleteIdentities)
 			}
-
 			// Delete tokens override.
-			fld = meta_val.FieldByName("RAW_DELETETOKENS")
-
-			if fld != (reflect.Value{}) {
-				*srv.DeleteTokens = reflect.Value.Bool(fld)
+			if env.RAW_DeleteTokens != nil {
+				*srv.DeleteTokens, _ = strconv.ParseBool(*env.RAW_DeleteTokens)
 			}
 
 			// Delete server files/data override.
-			fld = meta_val.FieldByName("RAW_DELETESV")
-
-			if fld != (reflect.Value{}) {
-				*srv.DeleteSv = reflect.Value.Bool(fld)
+			if env.RAW_DeleteSv != nil {
+				*srv.DeleteMap, _ = strconv.ParseBool(*env.RAW_DeleteSv)
 			}
 
 			// Change map seeds override.
-			fld = meta_val.FieldByName("RAW_CHANGEMAPSEEDS")
-
-			if fld != (reflect.Value{}) {
-				*srv.ChangeMapSeeds = reflect.Value.Bool(fld)
+			if env.RAW_ChangeMapSeeds != nil {
+				*srv.ChangeMapSeeds, _ = strconv.ParseBool(*env.RAW_ChangeMapSeeds)
 			}
 
 			// Map seeds override (this is a special case).
-			fld = meta_val.FieldByName("RAW_MAPSEEDS")
-
-			if fld != (reflect.Value{}) {
+			if env.RAW_MapSeeds != nil {
 				// Parse as string and split by ",".
-				seeds_str := reflect.Value.String(fld)
+				seeds_str := *env.RAW_MapSeeds
 				seeds_split := strings.Split(seeds_str, ",")
 
 				// Now loop through and insert into map seeds slice.
@@ -264,46 +234,36 @@ func AddServers(cfg *config.Config) error {
 			}
 
 			// Change map seeds pick type override.
-			fld = meta_val.FieldByName("RAW_MAPSEEDSPICKTYPE")
+			if env.RAW_MapSeedsPickType != nil {
+				val, _ := strconv.ParseInt(*env.RAW_MapSeedsPickType, 10, 16)
 
-			if fld != (reflect.Value{}) {
-				*srv.MapSeedsPickType = int(reflect.Value.Int(fld))
+				*srv.MapSeedsPickType = int(val)
 			}
 
-			// Change map seeds pick type override.
-			fld = meta_val.FieldByName("RAW_MAPSEEDSMERGE")
-
-			if fld != (reflect.Value{}) {
-				*srv.MapSeedsMerge = reflect.Value.Bool(fld)
+			// Change map seeds merge override.
+			if env.RAW_MapSeedsMerge != nil {
+				*srv.MapSeedsMerge, _ = strconv.ParseBool(*env.RAW_MapSeedsMerge)
 			}
 
 			// Change hostname override.
-			fld = meta_val.FieldByName("RAW_CHANGEHOSTNAME")
-
-			if fld != (reflect.Value{}) {
-				*srv.ChangeHostName = reflect.Value.Bool(fld)
+			if env.RAW_ChangeHostname != nil {
+				*srv.ChangeHostName, _ = strconv.ParseBool(*env.RAW_ChangeHostname)
 			}
 
 			// Hostname override.
-			fld = meta_val.FieldByName("RAW_HOSTNAME")
-
-			if fld != (reflect.Value{}) {
-				*srv.HostName = reflect.Value.String(fld)
+			if env.RAW_Hostname != nil {
+				*srv.HostName = *env.RAW_Hostname
 			}
 
 			// Merge warnings override.
-			fld = meta_val.FieldByName("RAW_MERGEWARNINGS")
-
-			if fld != (reflect.Value{}) {
-				*srv.MergeWarnings = reflect.Value.Bool(fld)
+			if env.RAW_MergeWarnings != nil {
+				*srv.MergeWarnings, _ = strconv.ParseBool(*env.RAW_MergeWarnings)
 			}
 
 			// Warning messages override (another special case).
-			fld = meta_val.FieldByName("RAW_MERGEWARNINGS")
-
-			if fld != (reflect.Value{}) {
+			if env.RAW_WarningMessages != nil {
 				// Parse as string.
-				data := reflect.Value.String(fld)
+				data := *env.RAW_WarningMessages
 
 				// Create structure for expected format.
 				var warning_msg WarningMessageOverride
