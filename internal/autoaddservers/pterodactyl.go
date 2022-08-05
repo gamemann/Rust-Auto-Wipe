@@ -2,6 +2,7 @@ package autoaddservers
 
 import (
 	"encoding/json"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -114,6 +115,24 @@ func AddServers(cfg *config.Config) error {
 
 		// Now loop through each data object (server).
 		for _, v := range server_list.Data {
+			// We must make sure the Rust environmental variables are valid if we're going to add said server.
+			env := &v.Attributes.Container.Environment
+
+			meta_val := reflect.ValueOf(*env).Elem()
+			fld := meta_val.FieldByName("WORLD_SEED")
+
+			// If WORLD_SEED doesn't exist (empty field), don't add server.
+			if fld == (reflect.Value{}) {
+				continue
+			}
+
+			fld = meta_val.FieldByName("HOSTNAME")
+
+			// If HOSTNAME doesn't exist (empty field), don't add server.
+			if fld == (reflect.Value{}) {
+				continue
+			}
+
 			var srv config.Server
 
 			// Split UUID by -.
@@ -122,6 +141,8 @@ func AddServers(cfg *config.Config) error {
 			// Assign short UUID.
 			srv.UUID = uuid_split[0]
 
+			// Append to CFG server slice.
+			cfg.Servers = append(cfg.Servers, srv)
 		}
 
 		// Check if we can exit now.
