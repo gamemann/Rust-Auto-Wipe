@@ -139,6 +139,9 @@ func AddServers(cfg *config.Config) error {
 
 			var srv config.Server
 
+			// Enable by default.
+			srv.Enabled = true
+
 			// Split UUID by -.
 			uuid_split := strings.Split(v.Attributes.UUID, "-")
 
