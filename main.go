@@ -145,7 +145,14 @@ func main() {
 	if err != nil {
 		// If there's an error and it contains "no such file", try to create the file with defaults.
 		if strings.Contains(err.Error(), "no such file") {
-			cfg.WriteDefaultsToFile(*configFile)
+			err = cfg.WriteDefaultsToFile(*configFile)
+
+			if err != nil {
+				fmt.Println("Failed to open config file and cannot create file.")
+				fmt.Println(err)
+
+				return
+			}
 		}
 
 		fmt.Println("WARNING - No config file found. Created config file at " + *configFile + " with defaults.")
