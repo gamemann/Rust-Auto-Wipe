@@ -279,6 +279,8 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 
 		warning.WarningTime = tmp.WarningTime
 		warning.Message = tmp.Message
+
+		warning_messages = append(warning_messages, warning)
 	}
 
 	// Check if we need to merge warning messages or override.
