@@ -11,6 +11,15 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
+type WarningMessageJSON struct {
+	WarningTime uint   `json:"time"`
+	Message     string `json:"message"`
+}
+
+type WarningMessageOverride struct {
+	Data []WarningMessageJSON `json:"data"`
+}
+
 type ServerListResp struct {
 	Object string `json:"object"`
 	Data   []struct {
@@ -134,6 +143,185 @@ func AddServers(cfg *config.Config) error {
 
 			// Assign short UUID.
 			srv.UUID = uuid_split[0]
+
+			/* STARTING ENV OVERRIDES (using the opposite method as above) */
+			// Enabled override.
+			fld = meta_val.FieldByName("RAW_ENABLED")
+
+			if fld != (reflect.Value{}) {
+				srv.Enabled = reflect.Value.Bool(fld)
+			}
+
+			// Path to server files override.
+			fld = meta_val.FieldByName("RAW_PATHTOSERVERFILES")
+
+			if fld != (reflect.Value{}) {
+				*srv.PathToServerFiles = reflect.Value.String(fld)
+			}
+
+			// Timezone override.
+			fld = meta_val.FieldByName("RAW_TIMEZONE")
+
+			if fld != (reflect.Value{}) {
+				*srv.Timezone = reflect.Value.String(fld)
+			}
+
+			// Wipe time override.
+			fld = meta_val.FieldByName("RAW_WIPETIME")
+
+			if fld != (reflect.Value{}) {
+				*srv.WipeTime = reflect.Value.String(fld)
+			}
+
+			// Wipe monthly override.
+			fld = meta_val.FieldByName("RAW_MONTHLY")
+
+			if fld != (reflect.Value{}) {
+				*srv.WipeMonthly = reflect.Value.Bool(fld)
+			}
+
+			// Wipe bi-weekly override.
+			fld = meta_val.FieldByName("RAW_BIWEEKLY")
+
+			if fld != (reflect.Value{}) {
+				*srv.WipeBiweekly = reflect.Value.Bool(fld)
+			}
+
+			// Delete map override.
+			fld = meta_val.FieldByName("RAW_DELETEMAP")
+
+			if fld != (reflect.Value{}) {
+				*srv.DeleteMap = reflect.Value.Bool(fld)
+			}
+
+			// Delete blueprints override.
+			fld = meta_val.FieldByName("RAW_DELETEBP")
+
+			if fld != (reflect.Value{}) {
+				*srv.DeleteBP = reflect.Value.Bool(fld)
+			}
+
+			// Delete deaths override.
+			fld = meta_val.FieldByName("RAW_DELETEDEATHS")
+
+			if fld != (reflect.Value{}) {
+				*srv.DeleteDeaths = reflect.Value.Bool(fld)
+			}
+
+			// Delete states override.
+			fld = meta_val.FieldByName("RAW_DELETESTATES")
+
+			if fld != (reflect.Value{}) {
+				*srv.DeleteStates = reflect.Value.Bool(fld)
+			}
+
+			// Delete identities override.
+			fld = meta_val.FieldByName("RAW_DELETEIDENTITIES")
+
+			if fld != (reflect.Value{}) {
+				*srv.DeleteIdentities = reflect.Value.Bool(fld)
+			}
+
+			// Delete tokens override.
+			fld = meta_val.FieldByName("RAW_DELETETOKENS")
+
+			if fld != (reflect.Value{}) {
+				*srv.DeleteTokens = reflect.Value.Bool(fld)
+			}
+
+			// Delete server files/data override.
+			fld = meta_val.FieldByName("RAW_DELETESV")
+
+			if fld != (reflect.Value{}) {
+				*srv.DeleteSv = reflect.Value.Bool(fld)
+			}
+
+			// Change map seeds override.
+			fld = meta_val.FieldByName("RAW_CHANGEMAPSEEDS")
+
+			if fld != (reflect.Value{}) {
+				*srv.ChangeMapSeeds = reflect.Value.Bool(fld)
+			}
+
+			// Map seeds override (this is a special case).
+			fld = meta_val.FieldByName("RAW_MAPSEEDS")
+
+			if fld != (reflect.Value{}) {
+				// Parse as string and split by ",".
+				seeds_str := reflect.Value.String(fld)
+				seeds_split := strings.Split(seeds_str, ",")
+
+				// Now loop through and insert into map seeds slice.
+				for _, seed := range seeds_split {
+					seed_num, err := strconv.Atoi(seed)
+
+					if err != nil {
+						continue
+					}
+
+					*srv.MapSeeds = append(*srv.MapSeeds, seed_num)
+				}
+			}
+
+			// Change map seeds pick type override.
+			fld = meta_val.FieldByName("RAW_MAPSEEDSPICKTYPE")
+
+			if fld != (reflect.Value{}) {
+				*srv.MapSeedsPickType = int(reflect.Value.Int(fld))
+			}
+
+			// Change map seeds pick type override.
+			fld = meta_val.FieldByName("RAW_MAPSEEDSMERGE")
+
+			if fld != (reflect.Value{}) {
+				*srv.MapSeedsMerge = reflect.Value.Bool(fld)
+			}
+
+			// Change hostname override.
+			fld = meta_val.FieldByName("RAW_CHANGEHOSTNAME")
+
+			if fld != (reflect.Value{}) {
+				*srv.ChangeHostName = reflect.Value.Bool(fld)
+			}
+
+			// Hostname override.
+			fld = meta_val.FieldByName("RAW_HOSTNAME")
+
+			if fld != (reflect.Value{}) {
+				*srv.HostName = reflect.Value.String(fld)
+			}
+
+			// Merge warnings override.
+			fld = meta_val.FieldByName("RAW_MERGEWARNINGS")
+
+			if fld != (reflect.Value{}) {
+				*srv.MergeWarnings = reflect.Value.Bool(fld)
+			}
+
+			// Warning messages override (another special case).
+			fld = meta_val.FieldByName("RAW_MERGEWARNINGS")
+
+			if fld != (reflect.Value{}) {
+				// Parse as string.
+				data := reflect.Value.String(fld)
+
+				// Create structure for expected format.
+				var warning_msg WarningMessageOverride
+
+				// Convert string to structure via JSON.
+				err := json.Unmarshal([]byte(data), &warning_msg)
+
+				if err == nil {
+					// Loop through entries and append to warning messages slice.
+					for _, j := range warning_msg.Data {
+						var warning_msg_cfg config.WarningMessage
+						warning_msg_cfg.WarningTime = j.WarningTime
+						warning_msg_cfg.Message = j.Message
+
+						*srv.WarningMessages = append(*srv.WarningMessages, warning_msg_cfg)
+					}
+				}
+			}
 
 			// Append to CFG server slice.
 			cfg.Servers = append(cfg.Servers, srv)
