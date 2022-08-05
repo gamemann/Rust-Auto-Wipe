@@ -34,6 +34,9 @@ type Server struct {
 	APIURL     *string `json:"apiurl"`
 	APIToken   *string `json:"apitoken"`
 	DebugLevel *int    `json:"debuglevel"`
+
+	// Paths (e.g. /home/container/server/rust).
+	PathToServerFiles string `json:"pathtoserverfiles"`
 }
 
 type Config struct {
@@ -77,7 +80,7 @@ type Config struct {
 func (cfg *Config) SetDefaults() {
 	cfg.DebugLevel = 1
 
-	cfg.PathToServerFiles = "/home/container/server/rust"
+	cfg.PathToServerFiles = "server/rust"
 
 	cfg.Timezone = "America/Chicago"
 	cfg.WipeTime = "Thursday 12:00"

@@ -47,6 +47,8 @@ type Data struct {
 	APIToken   string
 	DebugLevel int
 
+	PathToServerFiles string
+
 	InternalData Internal
 }
 
@@ -224,6 +226,15 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	}
 
 	data.DebugLevel = debuglevel
+
+	// Check for path to server files override.
+	pathtoserverfiles := cfg.PathToServerFiles
+
+	if srv.PathToServerFiles != nil {
+		pathtoserverfiles = *srv.PathToServerFiles
+	}
+
+	data.PathToServerFiles = pathtoserverfiles
 
 	// Parse wipe time.
 	info := strings.Split(wipetime, " ")
