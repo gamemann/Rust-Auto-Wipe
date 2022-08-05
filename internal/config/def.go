@@ -39,7 +39,7 @@ type Server struct {
 	ChangeMapSeeds   *bool  `json:"changemapseed"`
 	MapSeeds         *[]int `json:"mapseeds"`
 	MapSeedsPickType *int   `json:"mapseedspicktype"`
-	MapSeedsMerge    *bool  `json:"mergeseeds"`
+	MapSeedsMerge    *bool  `json:"mapseedsmerge"`
 
 	// Host name.
 	ChangeHostName *bool   `json:"changehostname"`
