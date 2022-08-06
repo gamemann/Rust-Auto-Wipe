@@ -1,0 +1,11 @@
+[Unit]
+Description=Rust Auto Wipe (RAW).
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+ExecStart=/usr/bin/rawapp
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
