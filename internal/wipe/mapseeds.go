@@ -18,7 +18,7 @@ func ProcessSeeds(data *Data, UUID string) bool {
 	// We first need to retrieve the current variable.
 	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", ep, nil)
 
-	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => nil.")
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+"api/"+ep+". Post data => nil.")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "List Variable return data => "+d+".")
 
 	if pterodactyl.IsError(d) {
@@ -84,7 +84,7 @@ func ProcessSeeds(data *Data, UUID string) bool {
 	// Send API request.
 	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", ep, post_data)
 
-	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+"api/"+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Update Variable return data => "+d+".")
 
 	if pterodactyl.IsError(d) {

@@ -113,7 +113,7 @@ func AddServers(cfg *config.Config) error {
 
 		d, _, err := pterodactyl.SendAPIRequest(cfg.APIURL, cfg.AppToken, "GET", ep, nil)
 
-		debug.SendDebugMsg("AUTOADD", cfg.DebugLevel, 3, "Sending request. Request => "+cfg.APIURL+ep+". Post data => nil.")
+		debug.SendDebugMsg("AUTOADD", cfg.DebugLevel, 3, "Sending request. Request => "+cfg.APIURL+"api/"+ep+". Post data => nil.")
 		debug.SendDebugMsg("AUTOADD", cfg.DebugLevel, 4, "Update Variable return data => "+d+".")
 
 		if err != nil {

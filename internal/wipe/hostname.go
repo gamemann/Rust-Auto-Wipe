@@ -28,7 +28,7 @@ func ProcessHostName(data *Data, UUID string, month int, day int, week_day int) 
 	// Send API request to update host name variable.
 	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", ep, post_data)
 
-	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+"api/"+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Update Variable return data => "+d+".")
 
 	if pterodactyl.IsError(d) {

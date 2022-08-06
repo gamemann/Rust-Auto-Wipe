@@ -53,7 +53,7 @@ func IsServerRunning(data *Data, UUID string) (bool, error) {
 
 	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", ep, nil)
 
-	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => nil.")
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+"api/"+ep+". Post data => nil.")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Running State return data => "+d+".")
 
 	if err != nil {
@@ -91,7 +91,7 @@ func SendPowerCommand(data *Data, UUID string, cmd string) error {
 
 	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", ep, post_data)
 
-	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+"api/"+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Power Command return data => "+d+".")
 
 	if pterodactyl.IsError(d) {
