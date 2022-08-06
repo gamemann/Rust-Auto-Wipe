@@ -139,9 +139,10 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 						fmt.Println(err)
 					}
 				}
-
 			}
 		}
+
+		// Sleep for one second to avoid unnecessary CPU cycles.
 		time.Sleep(time.Duration(time.Second))
 	}
 
