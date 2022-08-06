@@ -129,7 +129,6 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 
 			crons = append(crons, new_cron)
 		}
-
 	}
 
 	if srv.CronStr != nil {

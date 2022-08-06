@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"reflect"
 	"strings"
 	"syscall"
 	"time"
@@ -99,25 +98,26 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 	c := cron.New()
 
 	// If we have a single string, spawn a single cron job.
-	if reflect.TypeOf(data.CronStr).String() == "string" {
-		_, err := c.AddFunc(reflect.ValueOf(data.CronStr).String(), func() {
+	for _, c_str := range data.CronStr {
+		_, err = c.AddFunc(c_str, func() {
 			wipe_server(cfg, srv, &data)
 		})
 
 		if err != nil {
-			return err
-		}
-
-	} else if reflect.TypeOf(data.CronStr).String() == "[]interface {}" {
-		var tmp []reflect.Value
-		for _, cron := range reflect.ValueOf(data.CronStr).CallSlice(tmp) {
-			fmt.Println("Doing " + cron.String())
+			fmt.Println(err)
 		}
 	}
+
+	// Start cron job.
+	c.Start()
 
 	// See if we need to do a startup/first wipe.
 	if srv.WipeFirst {
 		wipe_server(cfg, srv, &data)
+	}
+
+	for true {
+		time.Sleep(time.Duration(time.Second))
 	}
 
 	return err
