@@ -59,9 +59,7 @@ func ProcessSeeds(data *Data, UUID string) bool {
 	curseed64, err := strconv.ParseInt(cur_seed_str, 10, 16)
 
 	if err != nil {
-		fmt.Println(err)
-
-		return false
+		curseed64 = -1
 	}
 
 	// Convert to integer type (To Do: Find a less sloppy way of doing this).
@@ -103,17 +101,20 @@ func ProcessSeeds(data *Data, UUID string) bool {
 }
 
 // Gets the next seed in the array.
-func GetNextSeed(data *Data, curseed int) int {
+func GetNextSeed(data *Data, cur_seed int) int {
 	// Make new variables for better looking code.
 	seed := -1
 	seeds := data.MapSeeds
 	pick_type := data.MapSeedPickType
 
+	// If cur_seed = -1, it indicates there isn't a valid current seed. Therefore, change pickup type to 0 regardless.
+	pick_type = 0
+
 	// Check pick type.
 	if pick_type == 1 {
 		// Loop through all seeds and get the next seed.
 		for v, s := range seeds {
-			if curseed == s {
+			if cur_seed == s {
 				// If we're on the last seed, return 0 as the array item (starting item). Otherwise, return index + 1.
 				if (len(seeds) - 1) == v {
 					seed = 0
@@ -123,7 +124,7 @@ func GetNextSeed(data *Data, curseed int) int {
 			}
 		}
 	} else {
-		seed = rand.Intn((len(seeds)-1)+1) + 0
+		seed = data.MapSeeds[rand.Intn((len(seeds)-1)+1)+0]
 	}
 
 	return seed
