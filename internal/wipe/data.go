@@ -141,7 +141,6 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 			if data.CronMerge {
 				crons = append(crons, tmp)
 			} else {
-				crons = nil
 				crons = []string{tmp}
 			}
 		} else if s.Kind() == reflect.Slice {
@@ -149,7 +148,6 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 				new_cron := s.Index(i).Interface().(string)
 
 				if !data.CronMerge {
-					crons = nil
 					crons = []string{}
 				}
 
@@ -242,20 +240,46 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.MapSeedsMerge = mapseedsmerge
 
 	// Check for map seeds override.
-	mapseeds := cfg.MapSeeds
+	var seeds []int
 
-	if srv.MapSeeds != nil {
-		if mapseedsmerge {
-			// Merge seeds (CFG and server specific).
-			for _, seed := range *srv.MapSeeds {
-				mapseeds = append(mapseeds, seed)
-			}
-		} else {
-			mapseeds = *srv.MapSeeds
+	map_seeds := cfg.MapSeeds
+
+	s = reflect.ValueOf(map_seeds)
+
+	// Check types.
+	if s.Kind() == reflect.Int {
+		seeds = append(seeds, int(s.Int()))
+	} else if s.Kind() == reflect.Slice {
+		for i := 0; i < s.Len(); i++ {
+			new_seed := s.Index(i).Interface().(int)
+
+			seeds = append(seeds, new_seed)
 		}
 	}
 
-	data.MapSeeds = mapseeds
+	if srv.MapSeeds != nil {
+		s = reflect.ValueOf(*srv.MapSeeds)
+
+		if s.Kind() == reflect.String {
+			if !data.MapSeedsMerge {
+				seeds = []int{}
+			} else {
+				seeds = []int{int(s.Int())}
+			}
+		} else if s.Kind() == reflect.Slice {
+			if !data.MapSeedsMerge {
+				seeds = []int{}
+			}
+
+			for i := 0; i < s.Len(); i++ {
+				new_seed := s.Index(i).Interface().(int)
+
+				seeds = append(seeds, new_seed)
+			}
+		}
+	}
+
+	data.MapSeeds = seeds
 
 	// Check for map seeds pick type override.
 	mapseedspicktype := cfg.MapSeedsPickType
