@@ -81,6 +81,13 @@ func ProcessFiles(data *Data, UUID string) bool {
 			}
 		}
 
+		// Check if we want to wipe states.
+		if data.DeleteStates {
+			if strings.Contains(file.Attributes.Name, "states") {
+				add_to_del = true
+			}
+		}
+
 		// Check if we want to wipe identities.
 		if data.DeleteIdentities {
 			if strings.Contains(file.Attributes.Name, "identities") {
