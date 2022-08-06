@@ -23,7 +23,7 @@ func ProcessHostName(data *Data, UUID string, month int, day int, week_day int) 
 
 	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Setting hostname => \""+hostname+"\".")
 
-	ep := "client/servers/" + UUID + "/variable"
+	ep := "client/servers/" + UUID + "/startup/variable"
 
 	// Send API request to update host name variable.
 	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", ep, post_data)

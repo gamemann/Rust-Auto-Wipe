@@ -18,7 +18,7 @@ func ProcessFiles(data *Data, UUID string) bool {
 	// Make sure to URL encode the query string (directory path).
 	dir := url.QueryEscape(data.PathToServerFiles)
 
-	ep := "client/servers/" + UUID + "/files/list&directory=" + dir
+	ep := "client/servers/" + UUID + "/files/list?directory=" + dir
 
 	// We first need to retrieve the current variable.
 	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", ep, nil)
@@ -53,7 +53,7 @@ func ProcessFiles(data *Data, UUID string) bool {
 	// Loop through all files.
 	for _, file := range files_list.Data {
 		// Make sure we're not dealing with a directory or link.
-		if !file.Attributes.Is_File {
+		if !file.Attributes.IsFile || file.Attributes.IsSymlink {
 			continue
 		}
 

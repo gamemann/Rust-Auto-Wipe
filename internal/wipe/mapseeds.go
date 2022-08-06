@@ -79,7 +79,7 @@ func ProcessSeeds(data *Data, UUID string) bool {
 	post_data["key"] = "WORLD_SEED"
 	post_data["value"] = strconv.Itoa(next_seed)
 
-	ep = "client/servers/" + UUID + "/variable"
+	ep = "client/servers/" + UUID + "/startup/variable"
 
 	// Send API request.
 	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", ep, post_data)

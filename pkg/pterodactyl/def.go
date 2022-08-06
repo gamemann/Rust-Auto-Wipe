@@ -1,5 +1,7 @@
 package pterodactyl
 
+import "time"
+
 type StartupResp struct {
 	Object string `json:"object"`
 	Data   []struct {
@@ -16,8 +18,15 @@ type ListFilesResp struct {
 	Data   []struct {
 		Object     string `json:"object"`
 		Attributes struct {
-			Name    string `json:"name"`
-			Is_File bool   `json:"isfile"`
+			Name       string    `json:"name"`
+			Mode       string    `json:"mode"`
+			ModeBits   string    `json:"mode_bits"`
+			Size       int       `json:"size"`
+			IsFile     bool      `json:"is_file"`
+			IsSymlink  bool      `json:"is_symlink"`
+			Mimetype   string    `json:"mimetype"`
+			CreatedAt  time.Time `json:"created_at"`
+			ModifiedAt time.Time `json:"modified_at"`
 		} `json:"attributes"`
 	} `json:"data"`
 }

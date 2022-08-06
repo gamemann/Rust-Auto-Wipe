@@ -15,11 +15,12 @@ type ServerResources struct {
 		CurrentState string `json:"current_state"`
 		IsSuspended  bool   `json:"is_suspended"`
 		Resources    struct {
-			MemoryBytes    int `json:"memory_bytes"`
-			CPUAbsolute    int `json:"cpu_absolute"`
-			DiskBytes      int `json:"disk_bytes"`
-			NetworkRxBytes int `json:"network_rx_bytes"`
-			NetworkTxBytes int `json:"network_tx_bytes"`
+			MemoryBytes    int64   `json:"memory_bytes"`
+			CPUAbsolute    float64 `json:"cpu_absolute"`
+			DiskBytes      int64   `json:"disk_bytes"`
+			NetworkRxBytes int     `json:"network_rx_bytes"`
+			NetworkTxBytes int     `json:"network_tx_bytes"`
+			Uptime         int     `json:"uptime"`
 		} `json:"resources"`
 	} `json:"attributes"`
 }
