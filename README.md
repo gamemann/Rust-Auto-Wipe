@@ -1,11 +1,11 @@
 # Rust Auto Wipe (WIP/In Development)
 ## Description
-An application made in Go for Rust servers operating with [Pterodactyl](https://pterodactyl.io/). This application automatically wipes server(s) weekly by default, but supports options such as monthly and biweekly. The program is aimed to be as flexible as possible. With that said, there are many features including the following.
+An application made in Go for Rust servers operating with [Pterodactyl](https://pterodactyl.io/). This application automatically wipes server(s) based off of cron jobs. The program is aimed to be as flexible as possible. With that said, there are many features including the following.
 
 * Allow rotating of map seeds.
 * Allow automatically changing the host name on each wipe with format support (including option replacements like `{day}` and `{month}`).
 * Deletion of files with the option to except specific types (e.g. don't delete player data such as states, identities, tokens, and more).
-* A flexible configuration and timing system.
+* A flexible configuration and uses a cron job system (support for multiple cron jobs per server).
 * Support for retrieving servers from Pterodactyl API and allowing environmental overrides.
 
 ## Configuration
@@ -37,17 +37,13 @@ When the program is ran, but no configuration file is found, it will attempt to 
     // Path starting from /home/container to the server files we need to delete (should be /server/rust with default Rust egg).
     "pathtoserverfiles": "/server/rust",
 
-    // Timezone from Go's time library.
+    // Timezone for Cron jobs to run with.
     "timezone": "America/Chicago",
 
-    // The weekly wipe time (<day> <hour>:<minute>). Hour is from 0 - 23 (using 24-hour system) and minute is 0 - 60.
-    "wipetime": "Thursday 12:00",
-
-    // Special flag to wipe on the first of each month.
-    "wipemonthly": false,
-
-    // Special flag to wipe biweekly.
-    "wipebiweekly": false,
+    // Either a single string or a slice/array of strings representing when the server should be wiped and processed via Cron format.
+    // I would recommend using a Cron generator (there are many online).
+    // With that said, the default value wipes at 3:30 PM every Thursday.
+    "cronstr": "30 15 * * 4",
 
     // Whether to delete map files (includes *.map and *.sav files).
     "deletemap": true,
@@ -164,9 +160,7 @@ The servers array includes the following:
             "debuglevel": 1,
             "pathtoserverfiles": "/server/rust",
             "timezone": "America/Chicago",
-            "wipetime": "Thursday 12:00",
-            "wipemonthly": false,
-            "wipebiweekly": false,
+            "cronstr": "30 15 * * 4",
             "deletemap": true,
             "deletebp": true,
             "deletedeaths": true,
@@ -204,9 +198,8 @@ The following is a list of environmental names you can create variables within P
 * **RAW_ENABLED** - Enabled override.
 * **RAW_PATHTOFILES** - Path to files override.
 * **RAW_TIMEZONE** - Timezone override.
-* **RAW_WIPETIME** - Wipe time override.
-* **RAW_WIPEMONTHLY** - Wipe monthly override.
-* **RAW_WIPEBIWEEKLY** - Wipe biweekly override.
+* **RAW_CRONMERGE** - Cron merge override.
+* **RAW_CRONSTR** - Cron string override.
 * **RAW_DELETEMAP** - Delete map override.
 * **RAW_DELETEBP** - Delete blueprints override.
 * **RAW_DELETEDEATHS** - Delete deaths override.
