@@ -122,7 +122,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	s := reflect.ValueOf(cron_str)
 
 	if s.Kind() == reflect.String {
-		cron_str = s.String()
+		crons = append(crons, s.String())
 	} else if s.Kind() == reflect.Slice {
 		for i := 0; i < s.Len(); i++ {
 			new_cron := s.Index(i).Interface().(string)
@@ -251,7 +251,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 		seeds = append(seeds, int(s.Int()))
 	} else if s.Kind() == reflect.Slice {
 		for i := 0; i < s.Len(); i++ {
-			new_seed := s.Index(i).Interface().(int)
+			new_seed := int(s.Index(i).Interface().(float64))
 
 			seeds = append(seeds, new_seed)
 		}
@@ -272,7 +272,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 			}
 
 			for i := 0; i < s.Len(); i++ {
-				new_seed := s.Index(i).Interface().(int)
+				new_seed := int(s.Index(i).Interface().(float64))
 
 				seeds = append(seeds, new_seed)
 			}
