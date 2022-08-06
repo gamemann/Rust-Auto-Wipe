@@ -35,10 +35,10 @@ type Server struct {
 	DeleteSv *bool `json:"deletesv"`
 
 	// Map seeds.
-	ChangeMapSeeds   *bool  `json:"changemapseed"`
-	MapSeeds         *[]int `json:"mapseeds"`
-	MapSeedsPickType *int   `json:"mapseedspicktype"`
-	MapSeedsMerge    *bool  `json:"mapseedsmerge"`
+	ChangeMapSeeds   *bool        `json:"changemapseed"`
+	MapSeeds         *interface{} `json:"mapseeds"`
+	MapSeedsPickType *int         `json:"mapseedspicktype"`
+	MapSeedsMerge    *bool        `json:"mapseedsmerge"`
 
 	// Host name.
 	ChangeHostName *bool   `json:"changehostname"`
@@ -81,9 +81,9 @@ type Config struct {
 	DeleteSv bool `json:"deletesv"`
 
 	// Map seeds.
-	ChangeMapSeed    bool  `json:"changemapseed"`
-	MapSeeds         []int `json:"mapseeds"`
-	MapSeedsPickType int   `json:"mapspicktype"`
+	ChangeMapSeed    bool        `json:"changemapseed"`
+	MapSeeds         interface{} `json:"mapseeds"`
+	MapSeedsPickType int         `json:"mapspicktype"`
 
 	// Host name.
 	ChangeHostName bool   `json:"changehostname"`
