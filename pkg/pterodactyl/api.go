@@ -1,12 +1,12 @@
 package pterodactyl
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -28,7 +28,7 @@ func SendAPIRequest(url string, token string, request_type string, request_endpo
 		}
 
 		// Read byte array into IO reader.
-		post_body = strings.NewReader(string(j))
+		post_body = bytes.NewBuffer(j)
 
 		if err != nil {
 			return d, rc, err
@@ -53,6 +53,9 @@ func SendAPIRequest(url string, token string, request_type string, request_endpo
 
 	// Accept only JSON.
 	req.Header.Set("Accept", "application/json")
+
+	// Set content stype.
+	req.Header.Set("Content-Type", "application/json")
 
 	// Perform HTTP request and check for errors.
 	resp, err := client.Do(req)
