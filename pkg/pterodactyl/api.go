@@ -36,7 +36,7 @@ func SendAPIRequest(url string, token string, request_type string, request_endpo
 	}
 
 	// Compile our URL.
-	urlstr := url + "/api/" + request_endpoint
+	urlstr := url + "api/" + request_endpoint
 
 	// Setup HTTP GET request.
 	client := &http.Client{Timeout: time.Second * 5}
@@ -77,6 +77,8 @@ func SendAPIRequest(url string, token string, request_type string, request_endpo
 
 	// Return data as a string.
 	d = string(body)
+
+	// Next, make sure we're not
 
 	return d, rc, nil
 }
