@@ -5,6 +5,7 @@ import (
 
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/format"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/misc"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
@@ -22,9 +23,12 @@ func ProcessHostName(data *Data, UUID string, month int, day int, week_day int) 
 
 	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Setting hostname => \""+hostname+"\".")
 
-	// Send API request to update host name variable.
-	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", "client/servers/"+UUID+"/variable", post_data)
+	ep := "client/servers/" + UUID + "/variable"
 
+	// Send API request to update host name variable.
+	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", ep, post_data)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Update Variable return data => "+d+".")
 
 	if pterodactyl.IsError(d) {

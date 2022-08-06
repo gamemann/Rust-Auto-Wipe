@@ -7,14 +7,18 @@ import (
 	"strconv"
 
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/misc"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
 // Processes seeds and determines the next seed. Should occur before wipe.
 func ProcessSeeds(data *Data, UUID string) bool {
-	// We first need to retrieve the current variable.
-	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", "client/servers/"+UUID+"/startup", nil)
+	ep := "client/servers/" + UUID + "/startup"
 
+	// We first need to retrieve the current variable.
+	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", ep, nil)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => nil.")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "List Variable return data => "+d+".")
 
 	if pterodactyl.IsError(d) {
@@ -75,9 +79,12 @@ func ProcessSeeds(data *Data, UUID string) bool {
 	post_data["key"] = "WORLD_SEED"
 	post_data["value"] = strconv.Itoa(next_seed)
 
-	// Send API request.
-	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", "client/servers/"+UUID+"/variable", post_data)
+	ep = "client/servers/" + UUID + "/variable"
 
+	// Send API request.
+	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", ep, post_data)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Update Variable return data => "+d+".")
 
 	if pterodactyl.IsError(d) {

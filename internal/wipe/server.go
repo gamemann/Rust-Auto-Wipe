@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/misc"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
@@ -48,8 +49,11 @@ func IsServerRunning(data *Data, UUID string) (bool, error) {
 	var running bool = false
 	var err error
 
-	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", "client/servers/"+UUID+"/resources", nil)
+	ep := "client/servers/" + UUID + "/resources"
 
+	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", ep, nil)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => nil.")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Running State return data => "+d+".")
 
 	if err != nil {
@@ -83,8 +87,11 @@ func SendPowerCommand(data *Data, UUID string, cmd string) error {
 	post_data := make(map[string]interface{})
 	post_data["signal"] = cmd
 
-	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", "client/servers/"+UUID+"/power", post_data)
+	ep := "client/servers/" + UUID + "/power"
 
+	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", ep, post_data)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Power Command return data => "+d+".")
 
 	if pterodactyl.IsError(d) {

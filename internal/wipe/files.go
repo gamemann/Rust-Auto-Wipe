@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/misc"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
@@ -17,9 +18,12 @@ func ProcessFiles(data *Data, UUID string) bool {
 	// Make sure to URL encode the query string (directory path).
 	dir := url.QueryEscape(data.PathToServerFiles)
 
-	// We first need to retrieve the current variable.
-	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", "client/servers/"+UUID+"/files/list&directory="+dir, nil)
+	ep := "client/servers/" + UUID + "/files/list&directory=" + dir
 
+	// We first need to retrieve the current variable.
+	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", ep, nil)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => nil.")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "List Files return data => "+d+".")
 
 	if pterodactyl.IsError(d) {
@@ -112,9 +116,12 @@ func ProcessFiles(data *Data, UUID string) bool {
 	// Debug.
 	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Deleting files => "+strings.Join(files_to_delete, ", ")+" (directory = "+data.PathToServerFiles+").")
 
-	// We first need to retrieve the current variable.
-	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", "client/servers/"+UUID+"/files/delete", post_data)
+	ep = "client/servers/" + UUID + "/files/delete"
 
+	// We first need to retrieve the current variable.
+	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", ep, post_data)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Delete Files return data => "+d+".")
 
 	if pterodactyl.IsError(d) {
