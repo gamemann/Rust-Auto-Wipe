@@ -14,7 +14,7 @@ func ProcessHostName(data *Data, UUID string) bool {
 	hostname := data.HostName
 
 	// Format hostname.
-	format.FormatString(&hostname)
+	format.FormatString(&hostname, 0)
 
 	// Now convert to proper POST data.
 	post_data := make(map[string]interface{})

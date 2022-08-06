@@ -7,7 +7,7 @@ import (
 )
 
 // Formats hostname for our needs.
-func FormatString(str *string) {
+func FormatString(str *string, secs_left int) {
 	// Gain some information about the time.
 	month := time.Now().Month()
 	//week_day := time.Now().Weekday()
@@ -21,4 +21,5 @@ func FormatString(str *string) {
 	*str = strings.Replace(*str, "{hour}", strconv.Itoa(hour), -1)
 	*str = strings.Replace(*str, "{minute}", strconv.Itoa(min), -1)
 	*str = strings.Replace(*str, "{second}", strconv.Itoa(sec), -1)
+	*str = strings.Replace(*str, "{seconds_left}", strconv.Itoa(secs_left), -1)
 }

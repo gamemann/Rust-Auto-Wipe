@@ -13,6 +13,7 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/wipe"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/format"
 	cron "github.com/robfig/cron/v3"
 )
 
@@ -117,6 +118,30 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 	}
 
 	for true {
+		// Loop through each cron entry.
+		for _, job := range c.Entries() {
+			// Retrieve the next time the job will be ran (Unix timestamp).
+			now := time.Now().Unix()
+			next := job.Next.Unix()
+
+			// Loop through warning messages.
+			for _, warning := range data.WarningMessages {
+				wt := next - now
+
+				// If what's remaining equals the warning time, we need to warn.
+				if wt == int64(warning.WarningTime) {
+					warning_msg := warning.Message
+					format.FormatString(&warning_msg, int(wt))
+
+					err := wipe.SendMessage(&data, srv.UUID, warning_msg)
+
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
+
+			}
+		}
 		time.Sleep(time.Duration(time.Second))
 	}
 
