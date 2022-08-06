@@ -226,6 +226,9 @@ git clone https://github.com/gamemann/Rust-Auto-Wipe.git
 # Change directory to repository.
 cd Rust-Auto-Wipe/
 
+# Retrieve public Cron package (V3).
+go get github.com/robfig/cron/v3
+
 # Build using Go into `raw` executable.
 go build -o raw
 ```
