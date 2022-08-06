@@ -10,11 +10,11 @@ import (
 )
 
 // Sets the next host name to use.
-func ProcessHostName(data *Data, UUID string, month int, day int, week_day int) bool {
+func ProcessHostName(data *Data, UUID string) bool {
 	hostname := data.HostName
 
 	// Format hostname.
-	format.FormatString(&hostname, month, day, week_day, 0, 0, 0)
+	format.FormatString(&hostname)
 
 	// Now convert to proper POST data.
 	post_data := make(map[string]interface{})

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"reflect"
 	"strings"
 	"syscall"
 	"time"
@@ -13,141 +14,113 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/wipe"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
+	cron "github.com/robfig/cron/v3"
 )
 
-func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
+func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
+	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Wiping server...")
+
+	// Process map seeds.
+	if data.ChangeMapSeeds {
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing seeds...")
+
+		wipe.ProcessSeeds(data, srv.UUID)
+	}
+
+	// Process host name.
+	if data.ChangeHostName {
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing hostname...")
+
+		wipe.ProcessHostName(data, srv.UUID)
+	}
+
+	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Stopping server...")
+
+	// We should stop the server (To Do: Implement something to check if server is running and force kill if so).
+	wipe.StopServer(data, srv.UUID)
+
+	// Wait until the server is confirmed stopped.
+	i := 0
+
+	for true {
+		// Check if the server is running and when it is confirmed stop, break the loop.
+		running, err := wipe.IsServerRunning(data, srv.UUID)
+
+		// Check for error. Otherwise, break if we're not running.
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			if !running {
+				break
+			}
+		}
+
+		// Increment i.
+		i++
+
+		// Kill the server after 15 seconds.
+		if i > 15 {
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Found up for 15 seconds. Trying to kill server...")
+			wipe.KillServer(data, srv.UUID)
+		}
+
+		// Give up after a minute.
+		if i > 60 {
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Server halt timed out...")
+
+			break
+		}
+
+		// Sleep every second to avoid unnecessary CPU cycles.
+		time.Sleep(time.Duration(time.Second))
+	}
+
+	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing files...")
+
+	// Process and delete files.
+	wipe.ProcessFiles(data, srv.UUID)
+
+	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Starting server back up...")
+
+	// Start server back up.
+	wipe.StartServer(data, srv.UUID)
+}
+
+func srv_handler(cfg *config.Config, srv *config.Server) error {
+	var err error
+
 	// We need to retrieve the wipe data information first.
 	var data wipe.Data
 
-	// For readability, define pointer to last week/day numbers here.
-	last_day_num := &data.InternalData.LastDayNum
-	last_month_num := &data.InternalData.LastMonthNum
-
+	// Process wipe data first.
 	wipe.ProcessData(&data, cfg, srv)
 
-	skip_next := true
+	// Create cron job handler.
+	c := cron.New()
 
-	// Create a repeating loop until the two signals are called in the main function.
-	for true {
-		// We need to create our own time management.
-		month := time.Now().Month()
-		week_day := time.Now().Weekday()
-		day := time.Now().Day()
-		hour := time.Now().Hour()
-		min := time.Now().Minute()
+	// If we have a single string, spawn a single cron job.
+	if reflect.TypeOf(data.CronStr).String() == "string" {
+		_, err := c.AddFunc(reflect.ValueOf(data.CronStr).String(), func() {
+			wipe_server(cfg, srv, &data)
+		})
 
-		new_month := false
-
-		do_wipe := false
-
-		// Check if it's a new month (starts from 1 - 12).
-		if *last_month_num != int(month) {
-			new_month = true
+		if err != nil {
+			return err
 		}
 
-		if new_month && data.WipeMonthly {
-			do_wipe = true
+	} else if reflect.TypeOf(data.CronStr).String() == "[]interface {}" {
+		var tmp []reflect.Value
+		for _, cron := range reflect.ValueOf(data.CronStr).CallSlice(tmp) {
+			fmt.Println("Doing " + cron.String())
 		}
-
-		// See if we need to do a startup/first wipe.
-		if srv.WipeFirst && !data.InternalData.FirstWiped {
-			do_wipe = true
-			data.InternalData.FirstWiped = true
-		}
-
-		// Otherwise, assume weekly. Check if we need to wipe.
-		if uint8(week_day) == data.WipeDay && uint8(hour) == data.WipeHour && uint8(min) == data.WipeHour {
-			// Check if we're doing bi-weekly.
-			if data.WipeBiweekly {
-				// Flip a switch.
-				if !skip_next {
-					do_wipe = true
-					skip_next = true
-				} else {
-					skip_next = false
-				}
-			} else {
-				// Otherwise, return true since we're assuming weekly.
-				do_wipe = true
-			}
-		}
-
-		// Check if we need to wipe.
-		if do_wipe {
-			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Wiping server...")
-
-			// Process map seeds.
-			if data.ChangeMapSeeds {
-				debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing seeds...")
-
-				wipe.ProcessSeeds(&data, srv.UUID)
-			}
-
-			// Process host name.
-			if data.ChangeHostName {
-				debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing hostname...")
-
-				wipe.ProcessHostName(&data, srv.UUID, int(month), int(day), int(week_day))
-			}
-
-			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Stopping server...")
-
-			// We should stop the server (To Do: Implement something to check if server is running and force kill if so).
-			wipe.StopServer(&data, srv.UUID)
-
-			// Wait until the server is confirmed stopped.
-			i := 0
-
-			for true {
-				// Check if the server is running and when it is confirmed stop, break the loop.
-				running, err := wipe.IsServerRunning(&data, srv.UUID)
-
-				// Check for error. Otherwise, break if we're not running.
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					if !running {
-						break
-					}
-				}
-
-				// Increment i.
-				i++
-
-				// Kill the server after 15 seconds.
-				if i > 15 {
-					debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Found up for 15 seconds. Trying to kill server...")
-					wipe.KillServer(&data, srv.UUID)
-				}
-
-				// Give up after a minute.
-				if i > 60 {
-					debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Server halt timed out...")
-
-					break
-				}
-
-				// Sleep every second to avoid unnecessary CPU cycles.
-				time.Sleep(time.Duration(time.Second))
-			}
-
-			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing files...")
-
-			// Process and delete files.
-			wipe.ProcessFiles(&data, srv.UUID)
-
-			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Starting server back up...")
-
-			// Start server back up.
-			wipe.StartServer(&data, srv.UUID)
-		}
-
-		// Update last values.
-		*last_day_num = int(week_day)
-		*last_month_num = int(month)
-
-		time.Sleep(time.Duration(time.Second))
 	}
+
+	// See if we need to do a startup/first wipe.
+	if srv.WipeFirst {
+		wipe_server(cfg, srv, &data)
+	}
+
+	return err
 }
 
 func main() {
@@ -194,14 +167,14 @@ func main() {
 	}
 
 	// Loop through each server and execute Go routine.
-	for i, srv := range cfg.Servers {
+	for _, srv := range cfg.Servers {
 		// Check if we're enabled.
 		if !srv.Enabled {
 			continue
 		}
 
 		// Spawn Go routine.
-		go srv_handler(&cfg, &srv, i)
+		go srv_handler(&cfg, &srv)
 	}
 
 	// Signal.

@@ -2,18 +2,13 @@ package wipe
 
 import (
 	"errors"
-	"fmt"
-	"strconv"
-	"strings"
+	"reflect"
 
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 )
 
 type Internal struct {
 	LatestVersion uint64
-	LastDayNum    int
-	LastMonthNum  int
-	FirstWiped    bool
 }
 
 type WarningMessage struct {
@@ -28,13 +23,9 @@ type Data struct {
 
 	PathToServerFiles string
 
-	WipeDay      uint8 // 0 - 6 (Sunday -> Saturday).
-	WipeHour     uint8 // 0 - 24.
-	WipeMin      uint8 // 0 - 60.
-	WipeMonthly  bool
-	WipeBiweekly bool
-
-	TimeZone string
+	TimeZone  string
+	CronStr   []string
+	CronMerge bool
 
 	DeleteMap        bool
 	DeleteBP         bool
@@ -113,30 +104,61 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 
 	data.TimeZone = timezone
 
+	// Check for cron merge override.
+	cron_merge := cfg.CronMerge
+
+	if srv.CronMerge != nil {
+		cron_merge = *srv.CronMerge
+	}
+
+	data.CronMerge = cron_merge
+
 	// Check for wipe time override.
-	wipetime := cfg.WipeTime
+	var crons []string
 
-	if srv.WipeTime != nil && len(*srv.WipeTime) > 0 {
-		wipetime = *srv.WipeTime
+	cron_str := cfg.CronStr
+
+	// Add defaults to cron string slice.
+	if reflect.TypeOf(srv.CronStr).String() == "string" {
+		cron_str = reflect.ValueOf(srv.CronStr).String()
+	} else if reflect.TypeOf(cron_str).String() == "[]interface {}" {
+		slice, ok := *srv.CronStr.Interface().([]string)
+
+		if ok {
+			for _, v := range slice {
+				crons = append(crons, v)
+			}
+		}
 	}
 
-	// Check for wipe monthly override.
-	wipemonthly := cfg.WipeMonthly
+	if srv.CronStr != nil {
+		// Check if string.
+		if reflect.TypeOf(srv.CronStr).String() == "string" {
+			tmp := reflect.ValueOf(srv.CronStr).String()
 
-	if srv.WipeMonthly != nil {
-		wipemonthly = *srv.WipeMonthly
+			if data.CronMerge {
+				crons = append(crons, tmp)
+			} else {
+				crons = nil
+				crons = []string{tmp}
+			}
+		} else if reflect.TypeOf(cron_str).String() == "[]interface {}" {
+			slice, ok := srv.CronStr.Interface().([]string)
+
+			if ok {
+				if !data.CronMerge {
+					crons = nil
+					crons = []string{}
+				}
+
+				for _, v := range slice {
+					crons = append(crons, v)
+				}
+			}
+		}
 	}
 
-	data.WipeMonthly = wipemonthly
-
-	// Check for wipe biweekly override.
-	wipebiweekly := cfg.WipeBiweekly
-
-	if srv.WipeBiweekly != nil {
-		wipebiweekly = *srv.WipeBiweekly
-	}
-
-	data.WipeBiweekly = wipebiweekly
+	data.CronStr = cron_str
 
 	// Check for delete map override.
 	deletemap := cfg.DeleteMap
@@ -305,85 +327,10 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 
 				warning_messages = append(warning_messages, warning)
 			}
-
 		}
 	}
 
 	data.WarningMessages = warning_messages
-
-	// Parse wipe time.
-	info := strings.Split(wipetime, " ")
-
-	day := info[0]
-	timeinfo := info[1]
-
-	// Convert day to numberic value from 0 - 6.
-	switch strings.ToLower(day) {
-	case "sunday":
-		data.WipeDay = 0
-	case "monday":
-		data.WipeDay = 1
-	case "tuesday":
-		data.WipeDay = 2
-	case "wednesday":
-		data.WipeDay = 3
-	case "thursday":
-		data.WipeDay = 4
-	case "friday":
-		data.WipeDay = 5
-	case "saturday":
-		data.WipeDay = 6
-	default:
-		data.WipeDay = 0
-	}
-
-	td := strings.Split(timeinfo, ":")
-
-	// Make sure we have two or more elements.
-	if len(td) < 2 {
-		return errors.New("Time info split failure (< 2 array size).")
-	}
-
-	hour, err := strconv.Atoi(td[0])
-
-	if err != nil {
-		return err
-	}
-
-	min, err := strconv.Atoi(td[1])
-
-	if err != nil {
-		return err
-	}
-
-	// Do boundary checks.
-	if hour > 24 {
-		hour = 24
-
-		if cfg.DebugLevel > 0 {
-			fmt.Println("[WARNING] Found hour out of bounds. (> 24).")
-		}
-	} else if hour < 0 {
-		hour = 0
-
-		if cfg.DebugLevel > 0 {
-			fmt.Println("[WARNING] Found hour out of bounds (< 0).")
-		}
-	}
-
-	if min > 60 {
-		min = 60
-
-		if cfg.DebugLevel > 0 {
-			fmt.Println("[WARNING] Found minute out of bounds (> 60).")
-		}
-	} else if min < 0 {
-		min = 0
-
-		if cfg.DebugLevel > 0 {
-			fmt.Println("[WARNING] Found minute out of bounds (< 0).")
-		}
-	}
 
 	return nil
 }

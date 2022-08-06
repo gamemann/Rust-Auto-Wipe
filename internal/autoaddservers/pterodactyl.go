@@ -63,9 +63,7 @@ type ServerListResp struct {
 					RAW_Enabled           *string `json:"RAW_ENABLED"`
 					RAW_PathToServerFiles *string `json:"RAW_PATHTOSERVERFILES"`
 					RAW_Timezone          *string `json:"RAW_TIMEZONE"`
-					RAW_WipeTime          *string `json:"RAW_WIPETIME"`
-					RAW_WipeMonthly       *string `json:"RAW_WIPEMONTHLY"`
-					RAW_WipeBiweekly      *string `json:"RAW_WIPEBIWEEKLY"`
+					RAW_CronStr           *string `json:"RAW_CRONSTR"`
 					RAW_DeleteMap         *string `json:"RAW_DELETEMAP"`
 					RAW_DeleteBP          *string `json:"RAW_DELETEBP"`
 					RAW_DeleteDeaths      *string `json:"RAW_DELETEDEATHS"`
@@ -172,18 +170,8 @@ func AddServers(cfg *config.Config) error {
 			}
 
 			// Wipe time override.
-			if env.RAW_WipeTime != nil {
-				*srv.WipeTime = *env.RAW_WipeTime
-			}
-
-			// Wipe monthly override.
-			if env.RAW_WipeMonthly != nil {
-				*srv.WipeMonthly, _ = strconv.ParseBool(*env.RAW_WipeMonthly)
-			}
-
-			// Wipe biweekly override.
-			if env.RAW_WipeBiweekly != nil {
-				*srv.WipeBiweekly, _ = strconv.ParseBool(*env.RAW_WipeBiweekly)
+			if env.RAW_CronStr != nil {
+				//*srv.CronStr = *env.RAW_CronStr
 			}
 
 			// Delete map override.
