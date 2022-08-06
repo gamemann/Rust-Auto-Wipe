@@ -44,13 +44,15 @@ func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 
 	for true {
 		// Check if the server is running and when it is confirmed stop, break the loop.
-		running, err := wipe.IsServerRunning(data, srv.UUID)
+		state, err := wipe.GetServerState(data, srv.UUID)
 
 		// Check for error. Otherwise, break if we're not running.
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			if !running {
+			if state == "offline" {
+				debug.SendDebugMsg(srv.UUID, data.DebugLevel, 4, "Found server offline. Continuing..")
+
 				break
 			}
 		}
@@ -59,7 +61,7 @@ func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 		i++
 
 		// Kill the server after 15 seconds.
-		if i > 15 {
+		if i == 15 {
 			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Found up for 15 seconds. Trying to kill server...")
 			wipe.KillServer(data, srv.UUID)
 		}
@@ -84,6 +86,45 @@ func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 
 	// Start server back up.
 	wipe.StartServer(data, srv.UUID)
+
+	// Make sure the server starts back up.
+	i = 0
+	failed := 0
+
+	for true {
+		// Check if the server is running or starting. If confirmed, break loop.
+		state, err := wipe.GetServerState(data, srv.UUID)
+
+		// Check for error. Otherwise, break if we're not running.
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			if state == "starting" || state == "running" {
+				debug.SendDebugMsg(srv.UUID, data.DebugLevel, 4, "Found server starting/running. Continuing..")
+
+				break
+			}
+		}
+
+		// Increment i.
+		i++
+
+		// If we hit 15, start server again and reset i.
+		if i == 15 {
+			wipe.StartServer(data, srv.UUID)
+			failed++
+
+			i = 0
+		}
+
+		// Give up after 5 attempts.
+		if failed > 5 {
+			break
+		}
+
+		// Sleep every second to avoid unnecessary CPU cycles.
+		time.Sleep(time.Duration(time.Second))
+	}
 }
 
 func srv_handler(cfg *config.Config, srv *config.Server) error {
@@ -100,7 +141,7 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 
 	// If we have a single string, spawn a single cron job.
 	for _, c_str := range data.CronStr {
-		_, err = c.AddFunc(c_str, func() {
+		_, err = c.AddFunc("CRON_TZ="+data.TimeZone+" "+c_str, func() {
 			wipe_server(cfg, srv, &data)
 		})
 
@@ -112,12 +153,43 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 	// Start cron job.
 	c.Start()
 
+	// Loop through each cron entry and print the next wipe date for debug.
+	for _, job := range c.Entries() {
+		tz, err := time.LoadLocation(data.TimeZone)
+
+		if err != nil {
+			fmt.Println(err)
+
+			continue
+		}
+
+		// Retrieve the next time the job will be ran (Unix timestamp).
+		next := job.Next.In(tz).Format("01-02-2006 3:04 PM MST")
+
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Next wipe date => "+next)
+	}
+
 	// See if we need to do a startup/first wipe.
 	if srv.WipeFirst {
 		wipe_server(cfg, srv, &data)
 	}
 
 	for true {
+		// Check if we're in running state.
+		state, err := wipe.GetServerState(&data, srv.UUID)
+
+		if err != nil {
+			time.Sleep(time.Duration(time.Second))
+
+			continue
+		}
+
+		if state != "running" {
+			time.Sleep(time.Duration(time.Second))
+
+			continue
+		}
+
 		// Loop through each cron entry.
 		for _, job := range c.Entries() {
 			// Retrieve the next time the job will be ran (Unix timestamp).
@@ -132,6 +204,8 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 				if wt == int64(warning.WarningTime) {
 					warning_msg := warning.Message
 					format.FormatString(&warning_msg, int(wt))
+
+					debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Sending warning message => "+warning_msg+".")
 
 					err := wipe.SendMessage(&data, srv.UUID, warning_msg)
 
