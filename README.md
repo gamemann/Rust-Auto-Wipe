@@ -223,5 +223,52 @@ The following is a list of environmental names you can create variables within P
 * **RAW_WARNINGMESSAGES** - Warning messages override (another special case, this should be a JSON string of the normal `warningmessages` JSON item). Example - `{"warningmessages": [{"warningtime": 5, "message": "{seconds_left} until wipe!"}]}`.
 * **RAW_WIPEFIRST** - Wipe first override.
 
+## Building and Running Project
+Building the project is simple and only requires `git` and Go.
+
+```bash
+# Clone repository.
+git clone https://github.com/gamemann/Rust-Auto-Wipe.git
+
+# Change directory to repository.
+cd Rust-Auto-Wipe/
+
+# Build using Go into `raw` executable.
+go build -o raw
+```
+
+## Using Makefile + Systemd
+You may also use a Makefile I made to build the application and install a Systemd file.
+
+```bash
+# Build project (go build -o raw).
+make
+
+# Install `rawapp` (/usr/bin/rawapp) and Systemd process.
+sudo make install
+```
+
+To have the application run on startup, and/or in the background, you may do the following.
+
+```bash
+# Reload Systemd daemon (needed after install of Systemd service).
+sudo systemctl daemon-reload
+
+# Enable (on startup) and start service.
+sudo systemctl enable --now raw
+
+# Start service.
+sudo systemctl start raw
+
+# Restart service.
+sudo systemctl restart raw
+
+# Stop service.
+sudo systemctl stop raw
+
+# Disable (on startup) and stop service.
+sudo systemctl disable --now raw
+```
+
 ## Credits
 * [Christian Deacon](https://github.com/gamemann)
