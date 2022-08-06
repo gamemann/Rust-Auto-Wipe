@@ -2,7 +2,6 @@ package autoaddservers
 
 import (
 	"encoding/json"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -178,7 +177,17 @@ func AddServers(cfg *config.Config) error {
 
 			// Cron string override.
 			if env.RAW_CronStr != nil {
-				//*srv.CronStr = *env.RAW_CronStr
+				s := *env.RAW_CronStr
+				var tmp []string
+
+				// Try to parse as JSON, if fails, parse as string.
+				err := json.Unmarshal([]byte(s), &tmp)
+
+				if err != nil {
+					*srv.CronStr = *env.RAW_CronStr
+				} else {
+					*srv.CronStr = tmp
+				}
 			}
 
 			// Delete map override.
@@ -222,23 +231,16 @@ func AddServers(cfg *config.Config) error {
 
 			// Map seeds override (this is a special case).
 			if env.RAW_MapSeeds != nil {
-				// Parse as string and split by ",".
-				seeds_str := *env.RAW_MapSeeds
-				seeds_split := strings.Split(seeds_str, ",")
+				s := *env.RAW_MapSeeds
+				var tmp []int
 
-				// Now loop through and insert into map seeds slice.
-				for _, seed := range seeds_split {
-					seed_num, err := strconv.Atoi(seed)
+				// Try to parse as JSON, if fails, parse as string.
+				err := json.Unmarshal([]byte(s), &tmp)
 
-					if err != nil {
-						continue
-					}
-
-					s := reflect.ValueOf(*srv.MapSeeds)
-
-					if s.Kind() == reflect.Slice {
-						*srv.MapSeeds = reflect.Append(s, reflect.ValueOf(seed_num))
-					}
+				if err != nil {
+					*srv.MapSeeds = *env.RAW_MapSeeds
+				} else {
+					*srv.CronStr = tmp
 				}
 			}
 
