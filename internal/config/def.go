@@ -103,7 +103,7 @@ func (cfg *Config) SetDefaults() {
 	cfg.PathToServerFiles = "/server/rust"
 
 	cfg.Timezone = "America/Chicago"
-	cfg.CronStr = "Thursday 12:00"
+	cfg.CronStr = "30 15 * * 4"
 	cfg.CronMerge = true
 
 	cfg.AutoAddServers = false

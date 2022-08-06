@@ -64,6 +64,7 @@ type ServerListResp struct {
 					RAW_Enabled           *string `json:"RAW_ENABLED"`
 					RAW_PathToServerFiles *string `json:"RAW_PATHTOSERVERFILES"`
 					RAW_Timezone          *string `json:"RAW_TIMEZONE"`
+					RAW_CronMerge         *string `json:"RAW_CRONMERGE"`
 					RAW_CronStr           *string `json:"RAW_CRONSTR"`
 					RAW_DeleteMap         *string `json:"RAW_DELETEMAP"`
 					RAW_DeleteBP          *string `json:"RAW_DELETEBP"`
@@ -170,7 +171,12 @@ func AddServers(cfg *config.Config) error {
 				*srv.Timezone = *env.RAW_Timezone
 			}
 
-			// Wipe time override.
+			// Cron merge override.
+			if env.RAW_CronMerge != nil {
+				*srv.CronMerge, _ = strconv.ParseBool(*env.RAW_CronMerge)
+			}
+
+			// Cron string override.
 			if env.RAW_CronStr != nil {
 				//*srv.CronStr = *env.RAW_CronStr
 			}
