@@ -15,6 +15,14 @@ func ProcessSeeds(data *Data, UUID string) bool {
 	// We first need to retrieve the current variable.
 	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", "client/servers/"+UUID+"/startup", nil)
 
+	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "List Variable return data => "+d+".")
+
+	if pterodactyl.IsError(d) {
+		debug.SendDebugMsg(UUID, data.DebugLevel, 0, "Could not list startup variables. Please enable debugging level 4 for body response including errors.")
+
+		return false
+	}
+
 	if err != nil {
 		fmt.Println(err)
 
@@ -69,6 +77,14 @@ func ProcessSeeds(data *Data, UUID string) bool {
 
 	// Send API request.
 	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "PUT", "client/servers/"+UUID+"/variable", post_data)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Update Variable return data => "+d+".")
+
+	if pterodactyl.IsError(d) {
+		debug.SendDebugMsg(UUID, data.DebugLevel, 0, "Could not update startup WORLD_SEED variable. Please enable debugging level 4 for body response including errors.")
+
+		return false
+	}
 
 	if err != nil {
 		fmt.Println(err)

@@ -2,6 +2,7 @@ package wipe
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
@@ -49,7 +50,15 @@ func IsServerRunning(data *Data, UUID string) (bool, error) {
 
 	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", "client/servers/"+UUID+"/resources", nil)
 
+	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Running State return data => "+d+".")
+
 	if err != nil {
+		return running, err
+	}
+
+	if pterodactyl.IsError(d) {
+		debug.SendDebugMsg(UUID, data.DebugLevel, 0, "Could not get server's running state. Please enable debugging level 4 for body response including errors.")
+
 		return running, err
 	}
 
@@ -74,7 +83,15 @@ func SendPowerCommand(data *Data, UUID string, cmd string) error {
 	post_data := make(map[string]interface{})
 	post_data["signal"] = cmd
 
-	_, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", "client/servers/"+UUID+"/power", post_data)
+	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", "client/servers/"+UUID+"/power", post_data)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Power Command return data => "+d+".")
+
+	if pterodactyl.IsError(d) {
+		debug.SendDebugMsg(UUID, data.DebugLevel, 0, "Could not send power command. Please enable debugging level 4 for body response including errors.")
+
+		return errors.New("Could not send power command.")
+	}
 
 	return err
 }
