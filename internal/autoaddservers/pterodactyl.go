@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
@@ -108,7 +109,12 @@ func AddServers(cfg *config.Config) error {
 
 	// Retrieve list of all servers from Pterodactyl application API.
 	for true {
-		d, _, err := pterodactyl.SendAPIRequest(cfg.APIURL, cfg.AppToken, "GET", "application/servers?p="+strconv.Itoa(p), nil)
+		ep := "application/servers?p=" + strconv.Itoa(p)
+
+		d, _, err := pterodactyl.SendAPIRequest(cfg.APIURL, cfg.AppToken, "GET", ep, nil)
+
+		debug.SendDebugMsg("AUTOADD", cfg.DebugLevel, 3, "Sending request. Request => "+cfg.APIURL+ep+". Post data => nil.")
+		debug.SendDebugMsg("AUTOADD", cfg.DebugLevel, 4, "Update Variable return data => "+d+".")
 
 		if err != nil {
 			break
