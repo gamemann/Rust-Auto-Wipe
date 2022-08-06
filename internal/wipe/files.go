@@ -102,7 +102,7 @@ func ProcessFiles(data *Data, UUID string) bool {
 	post_data["files"] = files_to_delete
 
 	// Debug.
-	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Deleting files => "+strings.Join(files_to_delete, ", "))
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Deleting files => "+strings.Join(files_to_delete, ", ")+" (directory = "+data.PathToServerFiles+").")
 
 	// We first need to retrieve the current variable.
 	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", "client/servers/"+UUID+"/files/delete", post_data)

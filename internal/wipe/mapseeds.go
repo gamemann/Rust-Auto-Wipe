@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
@@ -54,8 +55,12 @@ func ProcessSeeds(data *Data, UUID string) bool {
 	// Convert to integer type (To Do: Find a less sloppy way of doing this).
 	cur_seed := int(curseed64)
 
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Current seed => \""+strconv.Itoa(cur_seed)+"\".")
+
 	// Now get the next seed using the GetNextSeed() method.
 	next_seed := GetNextSeed(data, cur_seed)
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Next seed => \""+strconv.Itoa(next_seed)+"\".")
 
 	// Now convert to proper POST data.
 	post_data := make(map[string]interface{})

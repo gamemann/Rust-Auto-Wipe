@@ -3,6 +3,7 @@ package wipe
 import (
 	"encoding/json"
 
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
@@ -63,6 +64,8 @@ func IsServerRunning(data *Data, UUID string) (bool, error) {
 	if resources.Attributes.CurrentState == "running" {
 		running = true
 	}
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Running state => "+resources.Attributes.CurrentState+".")
 
 	return running, err
 }
