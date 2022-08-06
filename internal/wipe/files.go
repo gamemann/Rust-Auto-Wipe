@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
@@ -99,6 +100,9 @@ func ProcessFiles(data *Data, UUID string) bool {
 	post_data := make(map[string]interface{})
 	post_data["root"] = data.PathToServerFiles
 	post_data["files"] = files_to_delete
+
+	// Debug.
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Deleting files => "+strings.Join(files_to_delete, ", "))
 
 	// We first need to retrieve the current variable.
 	d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", "client/servers/"+UUID+"/files/delete", post_data)

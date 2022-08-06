@@ -12,6 +12,7 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/internal/autoaddservers"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/wipe"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
 )
 
 func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
@@ -73,16 +74,23 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 		// Check if we need to wipe.
 		if do_wipe {
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Wiping server...")
 
 			// Process map seeds.
 			if data.ChangeMapSeeds {
+				debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing seeds...")
+
 				wipe.ProcessSeeds(&data, srv.UUID)
 			}
 
 			// Process host name.
 			if data.ChangeHostName {
+				debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing hostname...")
+
 				wipe.ProcessHostName(&data, srv.UUID, int(month), int(day), int(week_day))
 			}
+
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Stopping server...")
 
 			// We should stop the server (To Do: Implement something to check if server is running and force kill if so).
 			wipe.StopServer(&data, srv.UUID)
@@ -108,11 +116,14 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 
 				// Kill the server after 15 seconds.
 				if i > 15 {
+					debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Found up for 15 seconds. Trying to kill server...")
 					wipe.KillServer(&data, srv.UUID)
 				}
 
 				// Give up after a minute.
 				if i > 60 {
+					debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Server halt timed out...")
+
 					break
 				}
 
@@ -120,8 +131,12 @@ func srv_handler(cfg *config.Config, srv *config.Server, idx int) {
 				time.Sleep(time.Duration(time.Second))
 			}
 
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing files...")
+
 			// Process and delete files.
 			wipe.ProcessFiles(&data, srv.UUID)
+
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Starting server back up...")
 
 			// Start server back up.
 			wipe.StartServer(&data, srv.UUID)
