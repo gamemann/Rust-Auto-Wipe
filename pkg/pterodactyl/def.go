@@ -34,3 +34,11 @@ type DeleteFileReq struct {
 	Root  string   `json:"root"`
 	Files []string `json:"files"`
 }
+
+type PteroResp struct {
+	Errors []struct {
+		Code   string `json:"code"`
+		Status string `json:"status"`
+		Detail string `json:"detail"`
+	} `json:"errors"`
+}
