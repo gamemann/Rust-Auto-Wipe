@@ -19,7 +19,7 @@ func SendAPIRequest(url string, token string, request_type string, request_endpo
 	var post_body io.Reader
 
 	// Check to see if we need to send post data.
-	if request_type == "POST" {
+	if request_type == "POST" || request_type == "PUT" {
 		// Convert to JSON and use as body.
 		j, err := json.Marshal(form_data)
 
