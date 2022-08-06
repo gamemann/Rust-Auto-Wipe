@@ -2,6 +2,7 @@ package autoaddservers
 
 import (
 	"encoding/json"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -227,7 +228,11 @@ func AddServers(cfg *config.Config) error {
 						continue
 					}
 
-					*srv.MapSeeds = append(*srv.MapSeeds, seed_num)
+					s := reflect.ValueOf(*srv.MapSeeds)
+
+					if s.Kind() == reflect.Slice {
+						*srv.MapSeeds = reflect.Append(s, reflect.ValueOf(seed_num))
+					}
 				}
 			}
 
