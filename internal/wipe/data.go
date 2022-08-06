@@ -119,22 +119,25 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	cron_str := cfg.CronStr
 
 	// Add defaults to cron string slice.
-	if reflect.TypeOf(srv.CronStr).String() == "string" {
-		cron_str = reflect.ValueOf(srv.CronStr).String()
-	} else if reflect.TypeOf(cron_str).String() == "[]interface {}" {
-		slice, ok := *srv.CronStr.Interface().([]string)
+	s := reflect.ValueOf(cron_str)
 
-		if ok {
-			for _, v := range slice {
-				crons = append(crons, v)
-			}
+	if s.Kind() == reflect.String {
+		cron_str = s.String()
+	} else if s.Kind() == reflect.Slice {
+		for i := 0; i < s.Len(); i++ {
+			new_cron := s.Index(i).Interface().(string)
+
+			crons = append(crons, new_cron)
 		}
+
 	}
 
 	if srv.CronStr != nil {
+		s = reflect.ValueOf(*srv.CronStr)
+
 		// Check if string.
-		if reflect.TypeOf(srv.CronStr).String() == "string" {
-			tmp := reflect.ValueOf(srv.CronStr).String()
+		if s.Kind() == reflect.String {
+			tmp := s.String()
 
 			if data.CronMerge {
 				crons = append(crons, tmp)
@@ -142,23 +145,21 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 				crons = nil
 				crons = []string{tmp}
 			}
-		} else if reflect.TypeOf(cron_str).String() == "[]interface {}" {
-			slice, ok := srv.CronStr.Interface().([]string)
+		} else if s.Kind() == reflect.Slice {
+			for i := 0; i < s.Len(); i++ {
+				new_cron := s.Index(i).Interface().(string)
 
-			if ok {
 				if !data.CronMerge {
 					crons = nil
 					crons = []string{}
 				}
 
-				for _, v := range slice {
-					crons = append(crons, v)
-				}
+				crons = append(crons, new_cron)
 			}
 		}
 	}
 
-	data.CronStr = cron_str
+	data.CronStr = crons
 
 	// Check for delete map override.
 	deletemap := cfg.DeleteMap
