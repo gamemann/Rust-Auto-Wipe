@@ -46,8 +46,8 @@ func KillServer(data *Data, UUID string) error {
 	return err
 }
 
-func IsServerRunning(data *Data, UUID string) (bool, error) {
-	var running bool = false
+func GetServerState(data *Data, UUID string) (string, error) {
+	var state string = "stopped"
 	var err error
 
 	ep := "client/servers/" + UUID + "/resources"
@@ -58,13 +58,13 @@ func IsServerRunning(data *Data, UUID string) (bool, error) {
 	debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Running State return data => "+d+".")
 
 	if err != nil {
-		return running, err
+		return state, err
 	}
 
 	if pterodactyl.IsError(d) {
 		debug.SendDebugMsg(UUID, data.DebugLevel, 0, "Could not get server's running state. Please enable debugging level 4 for body response including errors.")
 
-		return running, err
+		return state, err
 	}
 
 	var resources ServerResources
@@ -72,14 +72,29 @@ func IsServerRunning(data *Data, UUID string) (bool, error) {
 	err = json.Unmarshal([]byte(d), &resources)
 
 	if err != nil {
+		return state, err
+	}
+
+	state = resources.Attributes.CurrentState
+
+	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Server state => "+state+".")
+
+	return state, err
+}
+
+func IsServerRunning(data *Data, UUID string) (bool, error) {
+	var running bool
+	var err error
+
+	state, err := GetServerState(data, UUID)
+
+	if err != nil {
 		return running, err
 	}
 
-	if resources.Attributes.CurrentState == "running" {
+	if state == "running" {
 		running = true
 	}
-
-	debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Running state => "+resources.Attributes.CurrentState+".")
 
 	return running, err
 }
