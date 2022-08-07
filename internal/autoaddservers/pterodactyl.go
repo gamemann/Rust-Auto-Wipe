@@ -2,6 +2,7 @@ package autoaddservers
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -12,7 +13,7 @@ import (
 )
 
 type WarningMessageJSON struct {
-	WarningTime uint   `json:"time"`
+	WarningTime uint   `json:"warningtime"`
 	Message     string `json:"message"`
 }
 
@@ -415,6 +416,7 @@ func AddServers(cfg *config.Config) error {
 				if err == nil {
 					// Loop through entries and append to warning messages slice.
 					for _, j := range warning_msg.Data {
+						fmt.Println("AHHHHHH")
 						var warning_msg_cfg config.WarningMessage
 						warning_msg_cfg.WarningTime = j.WarningTime
 						warning_msg_cfg.Message = j.Message
