@@ -342,7 +342,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 			}
 		} else {
 			// Wipe messages and override.
-			warning_messages = nil
+			warning_messages = []WarningMessage{}
 
 			for _, tmp := range *srv.WarningMessages {
 				var warning WarningMessage
