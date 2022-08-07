@@ -79,12 +79,41 @@ When the program is ran, but no configuration file is found, it will attempt to 
     "changehostname": true,
 
     // The hostname format.
+    // Would recommend looking here for a cheatsheet on Golang's format library -> https://gosamples.dev/date-time-format-cheatsheet/ 
     // Replacements include:
-    // {month} = 1 - 12.
-    // {day} = 1 - x.
-    // {week_day} = 0 - 6 (starting from Sunday).
-    // {week_day_str} = Monday - Sunday
-    // {seconds_left} = Used for warning messages, but how many seconds left until wipe.
+    // {tz_one} = Timezone in TTT format (e.g. MST).
+    // {tz_two} = Timezone offset in ±hhmm format (e.g. +0100).
+    // {tz_three} = Timezone offset in ±hh format (e.g. +01).
+    //
+    // {month_str_short} = Month in TTT format (e.g. Jan).
+    // {month_str_long} = Full month string (e.g. January).
+    //
+    // {week_day_str_short} = Week day in TTT format (e.g. Mon).
+    // {week_day_str_long} = Full week day string (e.g. Monday).
+    //
+    // {year_one} = Year in TT format (e.g. 22).
+    // {year_two} = Full year (e.g. 2022).
+    //
+    // {month_one} = Month in TT format (e.g. 01).
+    // {month_two} = Month in T format (e.g. 1).
+    // {month_three} = Month in _T format (e.g. 1).
+    //
+    // {day_one} = Day in TT format (e.g. 01).
+    // {day_two} = Day in T format (e.g. 1).
+    // {day_three} = Day in _T format (e.g. 1).
+    //
+    // {hour_one} = Hour in TT 12 HR format (e.g. 05).
+    // {hour_two} = Hour in T 12 HR format (e.g. 5).
+    // {hour_three} = Hour in TT 24 HR format (e.g. 17).
+    //
+    // {min_one} = Minute in TT format (e.g. 06).
+    // {min_two} = Minute in T format (e.g. 6).
+    //
+    // {sec_one} = Second in TT format (e.g. 07).
+    // {sec_two} = Second in T format (e.g. 7).
+    //
+    // {mark_one} = 12-HR mark as TT format (e.g. PM or AM).
+    // {mark_two} = 12-HR mark as tt format (e.g. pm or am).
     "hostname": "Vanilla | FULL WIPE {month}/{day}",
     
     // Whether to merge both server-specific and global warning messages.
