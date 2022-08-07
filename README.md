@@ -81,6 +81,8 @@ When the program is ran, but no configuration file is found, it will attempt to 
     // The hostname format.
     // Would recommend looking here for a cheatsheet on Golang's format library -> https://gosamples.dev/date-time-format-cheatsheet/ 
     // Replacements include:
+    // {seconds_left} = Amount of seconds left until next wipe (only valid for warning messages).
+    //
     // {tz_one} = Timezone in TTT format (e.g. MST).
     // {tz_two} = Timezone offset in ±hhmm format (e.g. +0100).
     // {tz_three} = Timezone offset in ±hh format (e.g. +01).
