@@ -108,7 +108,9 @@ func GetNextSeed(data *Data, cur_seed int) int {
 	pick_type := data.MapSeedPickType
 
 	// If cur_seed = -1, it indicates there isn't a valid current seed. Therefore, change pickup type to 0 regardless.
-	pick_type = 0
+	if cur_seed == -1 {
+		pick_type = 0
+	}
 
 	// Check pick type.
 	if pick_type == 1 {
