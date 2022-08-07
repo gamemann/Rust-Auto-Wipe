@@ -143,6 +143,32 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 	for _, c_str := range data.CronStr {
 		_, err = c.AddFunc("CRON_TZ="+data.TimeZone+" "+c_str, func() {
 			wipe_server(cfg, srv, &data)
+
+			next_wipe := "N/A"
+			earliest := int64(1<<63 - 1)
+
+			for _, cron := range c.Entries() {
+				wipe_time := cron.Next.Unix()
+
+				// If it's earlier, choose this one.
+				//fmt.Println(strconv.FormatInt(wipe_time, 10) + " < " + strconv.FormatInt(earliest, 10))
+
+				if wipe_time < earliest {
+					earliest = wipe_time
+
+					tz, err := time.LoadLocation(data.TimeZone)
+
+					if err != nil {
+						fmt.Println(err)
+
+						continue
+					}
+
+					next_wipe = cron.Next.In(tz).Format("01-02-2006 3:04 PM MST")
+				}
+			}
+
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Server wiped. Next wipe date => "+next_wipe+".")
 		})
 
 		if err != nil {
@@ -166,7 +192,7 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 		// Retrieve the next time the job will be ran (Unix timestamp).
 		next := job.Next.In(tz).Format("01-02-2006 3:04 PM MST")
 
-		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Next wipe date => "+next)
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Next wipe date => "+next+".")
 	}
 
 	// See if we need to do a startup/first wipe.
