@@ -5,7 +5,7 @@
 An application made in Go for Rust servers operating with [Pterodactyl](https://pterodactyl.io/). This application automatically wipes server(s) based off of cron jobs. The program is aimed to be as flexible as possible. With that said, there are many features including the following.
 
 * Allow rotating of map seeds.
-* Allow automatically changing the host name on each wipe with format support (including option replacements like `{day}` and `{month}`).
+* Allow automatically changing the host name on each wipe with format support (including option replacements like `{day_two}` and `{month_two}`).
 * Deletion of files with the option to except specific types (e.g. don't delete player data such as states, identities, tokens, and more).
 * A flexible configuration and uses a cron job system (support for multiple cron jobs per server).
 * Support for retrieving servers from Pterodactyl API and allowing environmental overrides.
