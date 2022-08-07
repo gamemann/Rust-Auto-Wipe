@@ -162,21 +162,45 @@ func AddServers(cfg *config.Config) error {
 
 			// Path to server files override.
 			if env.RAW_PathToServerFiles != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.PathToServerFiles == nil {
+					var val string
+					srv.PathToServerFiles = &val
+				}
+
 				*srv.PathToServerFiles = *env.RAW_PathToServerFiles
 			}
 
 			// Timezone override.
 			if env.RAW_Timezone != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.Timezone == nil {
+					var val string
+					srv.Timezone = &val
+				}
+
 				*srv.Timezone = *env.RAW_Timezone
 			}
 
 			// Cron merge override.
 			if env.RAW_CronMerge != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.CronMerge == nil {
+					var val bool
+					srv.CronMerge = &val
+				}
+
 				*srv.CronMerge, _ = strconv.ParseBool(*env.RAW_CronMerge)
 			}
 
 			// Cron string override.
 			if env.RAW_CronStr != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.CronStr == nil {
+					var val interface{}
+					srv.CronStr = &val
+				}
+
 				s := *env.RAW_CronStr
 				var tmp []string
 
@@ -198,45 +222,99 @@ func AddServers(cfg *config.Config) error {
 
 			// Delete map override.
 			if env.RAW_DeleteMap != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.DeleteMap == nil {
+					var val bool
+					srv.DeleteMap = &val
+				}
+
 				*srv.DeleteMap, _ = strconv.ParseBool(*env.RAW_DeleteMap)
 			}
 
 			// Delete blueprints override.
 			if env.RAW_DeleteBP != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.DeleteBP == nil {
+					var val bool
+					srv.DeleteBP = &val
+				}
+
 				*srv.DeleteBP, _ = strconv.ParseBool(*env.RAW_DeleteBP)
 			}
 
 			// Delete deaths override.
 			if env.RAW_DeleteDeaths != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.DeleteDeaths == nil {
+					var val bool
+					srv.DeleteDeaths = &val
+				}
+
 				*srv.DeleteDeaths, _ = strconv.ParseBool(*env.RAW_DeleteDeaths)
 			}
 
 			// Delete states override.
 			if env.RAW_DeleteStates != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.DeleteStates == nil {
+					var val bool
+					srv.DeleteStates = &val
+				}
+
 				*srv.DeleteStates, _ = strconv.ParseBool(*env.RAW_DeleteStates)
 			}
 
 			// Delete identities override.
 			if env.RAW_DeleteIdentities != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.DeleteIdentities == nil {
+					var val bool
+					srv.DeleteIdentities = &val
+				}
+
 				*srv.DeleteIdentities, _ = strconv.ParseBool(*env.RAW_DeleteIdentities)
 			}
 			// Delete tokens override.
 			if env.RAW_DeleteTokens != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.DeleteTokens == nil {
+					var val bool
+					srv.DeleteTokens = &val
+				}
+
 				*srv.DeleteTokens, _ = strconv.ParseBool(*env.RAW_DeleteTokens)
 			}
 
 			// Delete server files/data override.
 			if env.RAW_DeleteSv != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.DeleteSv == nil {
+					var val bool
+					srv.DeleteSv = &val
+				}
+
 				*srv.DeleteMap, _ = strconv.ParseBool(*env.RAW_DeleteSv)
 			}
 
 			// Change map seeds override.
 			if env.RAW_ChangeMapSeeds != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.ChangeMapSeeds == nil {
+					var val bool
+					srv.ChangeMapSeeds = &val
+				}
+
 				*srv.ChangeMapSeeds, _ = strconv.ParseBool(*env.RAW_ChangeMapSeeds)
 			}
 
 			// Map seeds override (this is a special case).
 			if env.RAW_MapSeeds != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.MapSeeds == nil {
+					var val interface{}
+					srv.MapSeeds = &val
+				}
+
 				s := *env.RAW_MapSeeds
 				var tmp []int
 
@@ -257,6 +335,12 @@ func AddServers(cfg *config.Config) error {
 
 			// Change map seeds pick type override.
 			if env.RAW_MapSeedsPickType != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.MapSeedsPickType == nil {
+					var val int
+					srv.MapSeedsPickType = &val
+				}
+
 				val, _ := strconv.ParseInt(*env.RAW_MapSeedsPickType, 10, 16)
 
 				*srv.MapSeedsPickType = int(val)
@@ -264,21 +348,45 @@ func AddServers(cfg *config.Config) error {
 
 			// Change map seeds merge override.
 			if env.RAW_MapSeedsMerge != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.MapSeedsMerge == nil {
+					var val bool
+					srv.MapSeedsMerge = &val
+				}
+
 				*srv.MapSeedsMerge, _ = strconv.ParseBool(*env.RAW_MapSeedsMerge)
 			}
 
 			// Change hostname override.
 			if env.RAW_ChangeHostname != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.ChangeHostName == nil {
+					var val bool
+					srv.ChangeHostName = &val
+				}
+
 				*srv.ChangeHostName, _ = strconv.ParseBool(*env.RAW_ChangeHostname)
 			}
 
 			// Hostname override.
 			if env.RAW_Hostname != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.HostName == nil {
+					var val string
+					srv.HostName = &val
+				}
+
 				*srv.HostName = *env.RAW_Hostname
 			}
 
 			// Merge warnings override.
 			if env.RAW_MergeWarnings != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.MergeWarnings == nil {
+					var val bool
+					srv.MergeWarnings = &val
+				}
+
 				*srv.MergeWarnings, _ = strconv.ParseBool(*env.RAW_MergeWarnings)
 			}
 
@@ -289,6 +397,12 @@ func AddServers(cfg *config.Config) error {
 
 			// Warning messages override (another special case).
 			if env.RAW_WarningMessages != nil {
+				// Make sure we don't need to allocate memory.
+				if srv.WarningMessages == nil {
+					var val []config.WarningMessage
+					srv.WarningMessages = &val
+				}
+
 				// Parse as string.
 				data := *env.RAW_WarningMessages
 

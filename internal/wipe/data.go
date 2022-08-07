@@ -17,6 +17,7 @@ type WarningMessage struct {
 }
 
 type Data struct {
+	Enabled    bool
 	APIURL     string
 	APIToken   string
 	DebugLevel int
