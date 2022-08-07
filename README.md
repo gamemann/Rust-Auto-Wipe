@@ -243,7 +243,7 @@ The following is a list of environmental names you can create variables within P
 * **RAW_PATHTOFILES** - Path to files override.
 * **RAW_TIMEZONE** - Timezone override.
 * **RAW_CRONMERGE** - Cron merge override.
-* **RAW_CRONSTR** - Cron string override.
+* **RAW_CRONSTR** - Cron string override (this is a special case, cron string(s) can be a single string or a string array as a JSON string ( e.g. `["*/5 * * * *", "*/2 * * * *"]`)).
 * **RAW_DELETEMAP** - Delete map override.
 * **RAW_DELETEBP** - Delete blueprints override.
 * **RAW_DELETEDEATHS** - Delete deaths override.
@@ -251,13 +251,13 @@ The following is a list of environmental names you can create variables within P
 * **RAW_DELETEIDENTITIES** - Delete identities override.
 * **RAW_DELETESV** - Delete server files/data override.
 * **RAW_CHANGEMAPSEEDS** - Change map seeds override.
-* **RAW_MAPSEEDS** - Map seeds override (this is a special case, map seeds can either be a single integer or an integer array as a JSON string (e.g. `[4123143, 212312, 3512321]`).
+* **RAW_MAPSEEDS** - Map seeds override (this is a special case, map seeds can either be a single integer or an integer array as a JSON string (e.g. `[4123143, 212312, 3512321]`)).
 * **RAW_MAPSEEDSPICKTYPE** - Change map seeds pick type override.
 * **RAW_MAPSEEDSMERGE** - Change map seeds merge override.
 * **RAW_CHANGEHOSTNAME** - Change hostname override.
 * **RAW_HOSTNAME** - Hostname override.
 * **RAW_MERGEWARNINGS** - Merge warnings override.
-* **RAW_WARNINGMESSAGES** - Warning messages override (another special case, this should be a JSON string of the normal `warningmessages` JSON item). Example - `{"warningmessages": [{"warningtime": 5, "message": "{seconds_left} until wipe!"}]}`.
+* **RAW_WARNINGMESSAGES** - Warning messages override (another special case, this should be a JSON string of the normal `warningmessages` JSON item). Example - `{"data": [{"warningtime": 5, "message": "{seconds_left} until wipe!"}]}`.
 * **RAW_WIPEFIRST** - Wipe first override.
 
 ## Building and Running Project
