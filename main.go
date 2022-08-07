@@ -278,14 +278,14 @@ func main() {
 	if version {
 		fmt.Print(VERSION)
 
-		return
+		os.Exit(0)
 	}
 
 	// Check for help flag.
 	if help {
 		fmt.Print(HELP_MENU)
 
-		return
+		os.Exit(0)
 	}
 
 	// Create config struct.
@@ -312,7 +312,7 @@ func main() {
 				fmt.Println("Failed to open config file and cannot create file.")
 				fmt.Println(err)
 
-				return
+				os.Exit(1)
 			}
 		}
 
@@ -327,19 +327,19 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 
-			return
+			os.Exit(1)
 		}
 
 		fmt.Println(string(json_data))
 
-		return
+		os.Exit(0)
 	}
 
 	// If we don't have any servers, what's the point?
 	if len(cfg.Servers) < 1 {
 		fmt.Println("[ERR] No servers found.")
 
-		return
+		os.Exit(1)
 	}
 
 	// Loop through each server and execute Go routine.
@@ -357,4 +357,6 @@ func main() {
 	sigc := make(chan os.Signal, 1)
 	signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
 	<-sigc
+
+	os.Exit(0)
 }
