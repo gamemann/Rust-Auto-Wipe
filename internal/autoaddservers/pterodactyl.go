@@ -238,7 +238,12 @@ func AddServers(cfg *config.Config) error {
 				err := json.Unmarshal([]byte(s), &tmp)
 
 				if err != nil {
-					*srv.MapSeeds = *env.RAW_MapSeeds
+					new_val, err := strconv.Atoi(*env.RAW_MapSeeds)
+
+					if err == nil {
+						*srv.MapSeeds = new_val
+					}
+
 				} else {
 					*srv.CronStr = tmp
 				}
