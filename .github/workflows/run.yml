@@ -1,0 +1,35 @@
+name: Go
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  reuse_build:
+    uses: gamemann/Rust-Auto-Wipe/.github/workflows/build.yml@master
+  run:
+    needs: reuse_build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Download artifact from Build workflow
+      uses: actions/download-artifact@master
+      with:
+        name: build-output
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+        
+    - name: List files
+      run: ls -la
+      
+    - name: Add execute permissions to executable file
+      run: sudo chmod +x ./raw
+      
+    - name: Run RAW by printing out help menu.
+      run: sudo ./raw -h
