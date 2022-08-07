@@ -64,7 +64,9 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	apiurl := cfg.APIURL
 
 	if srv.APIURL != nil {
-		apiurl = *srv.APIURL
+		if len(*srv.APIURL) > 0 {
+			apiurl = *srv.APIURL
+		}
 	}
 
 	data.APIURL = apiurl
@@ -73,7 +75,9 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	apitoken := cfg.APIToken
 
 	if srv.APIToken != nil {
-		apitoken = *srv.APIToken
+		if len(*srv.APIToken) > 0 {
+			apitoken = *srv.APIToken
+		}
 	}
 
 	data.APIToken = apitoken
@@ -91,7 +95,9 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	pathtoserverfiles := cfg.PathToServerFiles
 
 	if srv.PathToServerFiles != nil {
-		pathtoserverfiles = *srv.PathToServerFiles
+		if len(*srv.PathToServerFiles) > 0 {
+			pathtoserverfiles = *srv.PathToServerFiles
+		}
 	}
 
 	data.PathToServerFiles = pathtoserverfiles
@@ -100,7 +106,9 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	timezone := cfg.Timezone
 
 	if srv.Timezone != nil && len(*srv.Timezone) > 0 {
-		timezone = *srv.Timezone
+		if len(*srv.Timezone) > 0 {
+			timezone = *srv.Timezone
+		}
 	}
 
 	data.TimeZone = timezone
@@ -122,11 +130,15 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	// Add defaults to cron string slice.
 	s := reflect.ValueOf(cron_str)
 
-	if s.Kind() == reflect.String {
+	if s.Kind() == reflect.String && s.Len() > 0 {
 		crons = append(crons, s.String())
 	} else if s.Kind() == reflect.Slice {
 		for i := 0; i < s.Len(); i++ {
 			new_cron := s.Index(i).Interface().(string)
+
+			if len(new_cron) < 1 {
+				continue
+			}
 
 			crons = append(crons, new_cron)
 		}
@@ -136,7 +148,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 		s = reflect.ValueOf(*srv.CronStr)
 
 		// Check if string.
-		if s.Kind() == reflect.String {
+		if s.Kind() == reflect.String && s.Len() > 0 {
 			tmp := s.String()
 
 			if data.CronMerge {
@@ -147,6 +159,10 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 		} else if s.Kind() == reflect.Slice {
 			for i := 0; i < s.Len(); i++ {
 				new_cron := s.Index(i).Interface().(string)
+
+				if len(new_cron) < 1 {
+					continue
+				}
 
 				if !data.CronMerge {
 					crons = []string{}
@@ -304,7 +320,9 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	hostname := cfg.HostName
 
 	if srv.HostName != nil {
-		hostname = *srv.HostName
+		if len(*srv.HostName) > 0 {
+			hostname = *srv.HostName
+		}
 	}
 
 	data.HostName = hostname
