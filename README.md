@@ -14,6 +14,7 @@ The below is the command line usage from the help menu for this program.
 ```bash
 Help Options
         -cfg= --cfg -cfg <path> > Path to config file override.
+        -l --list > Print out full config.
         -v --version > Print out version and exit.
         -h --help > Display help menu.
 ```
