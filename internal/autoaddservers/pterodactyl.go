@@ -183,6 +183,10 @@ func AddServers(cfg *config.Config) error {
 				// Try to parse as JSON, if fails, parse as string.
 				err := json.Unmarshal([]byte(s), &tmp)
 
+				if srv.CronStr == nil {
+					*srv.CronStr = ""
+				}
+
 				if err != nil {
 					*srv.CronStr = *env.RAW_CronStr
 				} else {
