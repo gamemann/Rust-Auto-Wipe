@@ -184,7 +184,7 @@ func AddServers(cfg *config.Config) error {
 				err := json.Unmarshal([]byte(s), &tmp)
 
 				if srv.CronStr == nil {
-					*srv.CronStr = ""
+					*srv.CronStr = new(string)
 				}
 
 				if err != nil {
