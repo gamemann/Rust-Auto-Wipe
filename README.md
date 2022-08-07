@@ -1,4 +1,4 @@
-# Rust Auto Wipe (WIP/In Development)
+# Rust Auto Wipe
 [![RAW Build Workflow](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/build.yml/badge.svg)](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/build.yml) [![RAW Run Workflow](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/run.yml/badge.svg)](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/run.yml)
 
 ## Description
