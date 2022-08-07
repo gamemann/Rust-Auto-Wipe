@@ -17,6 +17,9 @@ import (
 	cron "github.com/robfig/cron/v3"
 )
 
+const HELP_MENU = "Help Options\n\t-cfg= --cfg -cfg <path> > Path to config file override.\n\t-v --version > Print out version and exit.\n\t-h --help > Display help menu.\n\n"
+const VERSION = "1.0.0"
+
 func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Wiping server...")
 
@@ -250,9 +253,31 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 }
 
 func main() {
+	var version bool
+	var help bool
+
+	flag.BoolVar(&version, "version", false, "Print out version and exit.")
+	flag.BoolVar(&version, "v", false, "Print out version and exit.")
+
+	flag.BoolVar(&help, "help", false, "Print out help menu and exit.")
+	flag.BoolVar(&help, "h", false, "Print out help menu and exit.")
+
 	// Look for 'cfg' flag in command line arguments (default path: /etc/raw/raw.conf).
 	configFile := flag.String("cfg", "/etc/raw/raw.conf", "The path to the Rust Auto Wipe config file.")
+
 	flag.Parse()
+
+	if version {
+		fmt.Print(VERSION)
+
+		return
+	}
+
+	if help {
+		fmt.Print(HELP_MENU)
+
+		return
+	}
 
 	// Create config struct.
 	cfg := config.Config{}
