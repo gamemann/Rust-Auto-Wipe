@@ -8,6 +8,16 @@ An application made in Go for Rust servers operating with [Pterodactyl](https://
 * A flexible configuration and uses a cron job system (support for multiple cron jobs per server).
 * Support for retrieving servers from Pterodactyl API and allowing environmental overrides.
 
+## Command Line Usage
+The below is the command line usage from the help menu for this program.
+
+```bash
+Help Options
+        -cfg= --cfg -cfg <path> > Path to config file override.
+        -v --version > Print out version and exit.
+        -h --help > Display help menu.
+```
+
 ## Configuration
 All configuration is done inside a config file on disk via JSON. The default path is `/etc/raw/raw.conf` and may be changed via the `-cfg` flag.
 
