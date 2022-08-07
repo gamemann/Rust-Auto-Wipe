@@ -25,4 +25,4 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: build-output
-        path: build/raw
+        path: raw
