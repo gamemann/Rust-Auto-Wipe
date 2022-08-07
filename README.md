@@ -116,7 +116,7 @@ When the program is ran, but no configuration file is found, it will attempt to 
     //
     // {mark_one} = 12-HR mark as TT format (e.g. PM or AM).
     // {mark_two} = 12-HR mark as tt format (e.g. pm or am).
-    "hostname": "Vanilla | FULL WIPE {month}/{day}",
+    "hostname": "Vanilla | FULL WIPE {month_two}/{day_two}",
     
     // Whether to merge both server-specific and global warning messages.
     "mergewarnings": false,
@@ -203,7 +203,7 @@ The servers array includes the following:
             "mapseeds": null,
             "mapspicktype": 1,
             "changehostname": true,
-            "hostname": "Vanilla | FULL WIPE {month}/{day}",
+            "hostname": "Vanilla | FULL WIPE {month_two}/{day_two}",
             "mergewarnings": false,
             "warningmessages": null,
 

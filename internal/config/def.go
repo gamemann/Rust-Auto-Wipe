@@ -121,7 +121,7 @@ func (cfg *Config) SetDefaults() {
 	cfg.MapSeedsPickType = 1
 
 	cfg.ChangeHostName = true
-	cfg.HostName = "Vanilla | FULL WIPE {month}/{day}"
+	cfg.HostName = "Vanilla | FULL WIPE {month_two}/{day_two}"
 
 	// Warn each second for the last 10 seconds before the wipe.
 	for i := 1; i <= 10; i++ {
