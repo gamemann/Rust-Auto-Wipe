@@ -238,7 +238,7 @@ The following is a list of environmental names you can create variables within P
 * **RAW_DELETEIDENTITIES** - Delete identities override.
 * **RAW_DELETESV** - Delete server files/data override.
 * **RAW_CHANGEMAPSEEDS** - Change map seeds override.
-* **RAW_MAPSEEDS** - Map seeds override (this is a special case, map seeds should be a string with integers representing the seed list separated by commas, ",". Example - "123213,12314,123412").
+* **RAW_MAPSEEDS** - Map seeds override (this is a special case, map seeds can either be a single integer or an integer array as a JSON string (e.g. `[4123143, 212312, 3512321]`).
 * **RAW_MAPSEEDSPICKTYPE** - Change map seeds pick type override.
 * **RAW_MAPSEEDSMERGE** - Change map seeds merge override.
 * **RAW_CHANGEHOSTNAME** - Change hostname override.
