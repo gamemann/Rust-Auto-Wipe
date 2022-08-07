@@ -243,7 +243,7 @@ The following is a list of environmental names you can create variables within P
 * **RAW_PATHTOFILES** - Path to files override.
 * **RAW_TIMEZONE** - Timezone override.
 * **RAW_CRONMERGE** - Cron merge override.
-* **RAW_CRONSTR** - Cron string override (this is a special case, cron string(s) can be a single string or a string array as a JSON string ( e.g. `["*/5 * * * *", "*/2 * * * *"]`)).
+* **RAW_CRONSTR** - Cron string override (this is a special case, cron string(s) can be a single string or a string array as a JSON string (e.g. `["*/5 * * * *", "*/2 * * * *"]`)).
 * **RAW_DELETEMAP** - Delete map override.
 * **RAW_DELETEBP** - Delete blueprints override.
 * **RAW_DELETEDEATHS** - Delete deaths override.
