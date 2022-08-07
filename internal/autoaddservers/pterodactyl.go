@@ -330,7 +330,7 @@ func AddServers(cfg *config.Config) error {
 					}
 
 				} else {
-					*srv.CronStr = tmp
+					*srv.MapSeeds = tmp
 				}
 			}
 
