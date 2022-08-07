@@ -1,4 +1,6 @@
 # Rust Auto Wipe (WIP/In Development)
+[![RAW Build Workflow](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/build.yml/badge.svg)](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/build.yml) [![RAW Run Workflow](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/run.yml/badge.svg)](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/run.yml)
+
 ## Description
 An application made in Go for Rust servers operating with [Pterodactyl](https://pterodactyl.io/). This application automatically wipes server(s) based off of cron jobs. The program is aimed to be as flexible as possible. With that said, there are many features including the following.
 
