@@ -213,31 +213,31 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 
 			// Loop through warning messages.
 			for _, warning := range data.WarningMessages {
-				// Check if we're in running state.
-				state, err := wipe.GetServerState(&data, srv.UUID)
-
-				if err != nil {
-					time.Sleep(time.Duration(time.Second))
-
-					continue
-				}
-
-				if state != "running" {
-					time.Sleep(time.Duration(time.Second))
-
-					continue
-				}
-
 				wt := next - now
 
 				// If what's remaining equals the warning time, we need to warn.
 				if wt == int64(warning.WarningTime) {
+					// Check if we're in running state.
+					state, err := wipe.GetServerState(&data, srv.UUID)
+
+					if err != nil {
+						time.Sleep(time.Duration(time.Second))
+
+						continue
+					}
+
+					if state != "running" {
+						time.Sleep(time.Duration(time.Second))
+
+						continue
+					}
+
 					warning_msg := warning.Message
 					format.FormatString(&warning_msg, int(wt))
 
 					debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Sending warning message => "+warning_msg+".")
 
-					err := wipe.SendMessage(&data, srv.UUID, warning_msg)
+					err = wipe.SendMessage(&data, srv.UUID, warning_msg)
 
 					if err != nil {
 						fmt.Println(err)
