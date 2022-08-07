@@ -260,7 +260,7 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	if srv.MapSeeds != nil {
 		s = reflect.ValueOf(*srv.MapSeeds)
 
-		if s.Kind() == reflect.String {
+		if s.Kind() == reflect.Int {
 			if !data.MapSeedsMerge {
 				seeds = []int{}
 			} else {
