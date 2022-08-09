@@ -349,8 +349,10 @@ func main() {
 			continue
 		}
 
+		var srvtwo config.Server = srv
+
 		// Spawn Go routine.
-		go srv_handler(&cfg, &srv)
+		go srv_handler(&cfg, &srvtwo)
 	}
 
 	// Signal.
