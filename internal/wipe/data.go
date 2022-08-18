@@ -1,19 +1,28 @@
 package wipe
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
+	"strconv"
 
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
+)
+
+const (
+	Default_Map       = "Procedural Map"
+	Default_WorldSize = 3000
+	Default_WorldSeed = 0
+
+	Default_WarningMessage = "Wiping server in {seconds_left} seconds. Please join back!"
 )
 
 type Internal struct {
 	LatestVersion uint64
-}
-
-type WarningMessage struct {
-	WarningTime uint
-	Message     string
+	LatestWorld   uint
 }
 
 type Data struct {
@@ -37,10 +46,10 @@ type Data struct {
 
 	DeleteSv bool
 
-	ChangeMapSeeds  bool
-	MapSeeds        []int
-	MapSeedPickType uint
-	MapSeedsMerge   bool
+	ChangeWorldInfo   bool
+	WorldInfo         []config.WorldInfo
+	WorldInfoPickType uint
+	WorldInfoMerge    bool
 
 	NextMapSeed int
 
@@ -49,7 +58,7 @@ type Data struct {
 	NextHostName   string
 
 	MergeWarnings   bool
-	WarningMessages []WarningMessage
+	WarningMessages []config.WarningMessage
 
 	InternalData Internal
 }
@@ -238,74 +247,47 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 
 	data.DeleteSv = deletesv
 
-	// Check for change map seed override.
-	changemapseeds := cfg.ChangeMapSeed
+	// Check for change world info override.
+	changeworldinfo := cfg.ChangeWorldInfo
 
-	if srv.ChangeMapSeeds != nil {
-		changemapseeds = *srv.ChangeMapSeeds
+	if srv.ChangeWorldInfo != nil {
+		changeworldinfo = *srv.ChangeWorldInfo
 	}
 
-	data.ChangeMapSeeds = changemapseeds
+	data.ChangeWorldInfo = changeworldinfo
 
-	// Check for map seeds merge in server-specific settings.
-	mapseedsmerge := false
+	// Check for world info merge in server-specific settings.
+	worldinfomerge := false
 
-	if srv.MapSeedsMerge != nil {
-		mapseedsmerge = *srv.MapSeedsMerge
+	if srv.WorldInfoMerge != nil {
+		worldinfomerge = *srv.WorldInfoMerge
 	}
 
-	data.MapSeedsMerge = mapseedsmerge
+	data.WorldInfoMerge = worldinfomerge
 
-	// Check for map seeds override.
-	var seeds []int
+	// Check for world info override.
+	world_info := cfg.WorldInfo
 
-	map_seeds := cfg.MapSeeds
-
-	s = reflect.ValueOf(map_seeds)
-
-	// Check types.
-	if s.Kind() == reflect.Int {
-		seeds = append(seeds, int(s.Int()))
-	} else if s.Kind() == reflect.Slice {
-		for i := 0; i < s.Len(); i++ {
-			new_seed := int(s.Index(i).Interface().(float64))
-
-			seeds = append(seeds, new_seed)
+	if srv.WorldInfo != nil {
+		if data.WorldInfoMerge {
+			for _, v := range *srv.WorldInfo {
+				world_info = append(world_info, v)
+			}
+		} else {
+			world_info = *srv.WorldInfo
 		}
 	}
 
-	if srv.MapSeeds != nil {
-		s = reflect.ValueOf(*srv.MapSeeds)
+	data.WorldInfo = world_info
 
-		if s.Kind() == reflect.Int {
-			if !data.MapSeedsMerge {
-				seeds = []int{}
-			} else {
-				seeds = []int{int(s.Int())}
-			}
-		} else if s.Kind() == reflect.Slice {
-			if !data.MapSeedsMerge {
-				seeds = []int{}
-			}
+	// Check for world seed pick type override.
+	world_info_pick_type := cfg.WorldInfoPickType
 
-			for i := 0; i < s.Len(); i++ {
-				new_seed := int(s.Index(i).Interface().(float64))
-
-				seeds = append(seeds, new_seed)
-			}
-		}
+	if srv.WorldInfoPickType != nil {
+		world_info_pick_type = *srv.WorldInfoPickType
 	}
 
-	data.MapSeeds = seeds
-
-	// Check for map seeds pick type override.
-	mapseedspicktype := cfg.MapSeedsPickType
-
-	if srv.MapSeedsPickType != nil {
-		mapseedspicktype = *srv.MapSeedsPickType
-	}
-
-	data.MapSeedPickType = uint(mapseedspicktype)
+	data.WorldInfoPickType = uint(world_info_pick_type)
 
 	// Check for change host name override.
 	changehostname := cfg.ChangeHostName
@@ -337,43 +319,127 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	data.MergeWarnings = merge_warnings
 
 	// Check for warnings override.
-	var warning_messages []WarningMessage
-
-	// Since this is a custom structure, we have to use somewhat sloppy code :(
-	for _, tmp := range cfg.WarningMessages {
-		var warning WarningMessage
-
-		warning.WarningTime = tmp.WarningTime
-		warning.Message = tmp.Message
-
-		warning_messages = append(warning_messages, warning)
-	}
+	warning_messages := cfg.WarningMessages
 
 	// Check if we need to merge warning messages or override.
 	if srv.WarningMessages != nil {
 		if merge_warnings {
-			for _, tmp := range *srv.WarningMessages {
-				var warning WarningMessage
-				warning.Message = tmp.Message
-				warning.WarningTime = tmp.WarningTime
-
-				warning_messages = append(warning_messages, warning)
+			for _, v := range *srv.WarningMessages {
+				warning_messages = append(warning_messages, v)
 			}
 		} else {
-			// Wipe messages and override.
-			warning_messages = []WarningMessage{}
-
-			for _, tmp := range *srv.WarningMessages {
-				var warning WarningMessage
-				warning.Message = tmp.Message
-				warning.WarningTime = tmp.WarningTime
-
-				warning_messages = append(warning_messages, warning)
-			}
+			warning_messages = *srv.WarningMessages
 		}
 	}
 
 	data.WarningMessages = warning_messages
+
+	// Fill out null data for world information.
+	ep := "client/servers/" + srv.UUID + "/startup"
+
+	// We first need to retrieve the current variable.
+	d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", ep, nil)
+
+	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+"api/"+ep+". Post data => nil.")
+	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 4, "List Variable return data => "+d+".")
+
+	if pterodactyl.IsError(d) {
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 0, "Could not list startup variables. Please enable debugging level 4 for body response including errors.")
+
+		return errors.New("Could not list startup variables.")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	// We want to parse the response with the startup response structure.
+	var EnvVars pterodactyl.StartupResp
+
+	// Convert to JSON.
+	err = json.Unmarshal([]byte(d), &EnvVars)
+
+	if err != nil {
+		return err
+	}
+
+	for _, seed := range EnvVars.Data {
+		if seed.Attributes.Env_Variable == "WORLD_SEED" && len(seed.Attributes.Env_Variable) > 0 {
+			s := seed.Attributes.Srv_Value
+
+			for i := 0; i < len(data.WorldInfo); i++ {
+				if data.WorldInfo[i].WorldSeed == nil {
+					s_int, err := strconv.Atoi(s)
+
+					if err != nil {
+						fmt.Println(err)
+
+						continue
+					}
+
+					data.WorldInfo[i].WorldSeed = &s_int
+				}
+			}
+		}
+
+		if seed.Attributes.Env_Variable == "WORLD_SIZE" && len(seed.Attributes.Env_Variable) > 0 {
+			s := seed.Attributes.Srv_Value
+
+			for i := 0; i < len(data.WorldInfo); i++ {
+				if data.WorldInfo[i].WorldSize == nil {
+					s_int, err := strconv.Atoi(s)
+
+					if err != nil {
+						fmt.Println(err)
+
+						continue
+					}
+
+					data.WorldInfo[i].WorldSize = &s_int
+				}
+			}
+		}
+
+		if seed.Attributes.Env_Variable == "LEVEL" && len(seed.Attributes.Env_Variable) > 0 {
+			s := seed.Attributes.Srv_Value
+
+			for i := 0; i < len(data.WorldInfo); i++ {
+				if data.WorldInfo[i].Map == nil {
+					data.WorldInfo[i].Map = &s
+				}
+			}
+		}
+	}
+
+	// Loop through world information one more time and fill out anything missed with constants.
+	for i := 0; i < len(data.WorldInfo); i++ {
+		if data.WorldInfo[i].Map == nil {
+			tmp := Default_Map
+
+			data.WorldInfo[i].Map = &tmp
+		}
+
+		if data.WorldInfo[i].WorldSize == nil {
+			tmp := Default_WorldSeed
+
+			data.WorldInfo[i].WorldSize = &tmp
+		}
+
+		if data.WorldInfo[i].WorldSeed == nil {
+			tmp := Default_WorldSize
+
+			data.WorldInfo[i].WorldSize = &tmp
+		}
+	}
+
+	// Loop through warning messages and fill out warning message string if nil.
+	for i := 0; i < len(data.WarningMessages); i++ {
+		if data.WarningMessages[i].Message == nil {
+			tmp := Default_WarningMessage
+
+			data.WarningMessages[i].Message = &tmp
+		}
+	}
 
 	return nil
 }

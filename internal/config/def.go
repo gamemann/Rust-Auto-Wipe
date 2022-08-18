@@ -1,14 +1,21 @@
 package config
 
 type WarningMessage struct {
-	WarningTime uint   `json:"warningtime"`
-	Message     string `json:"message"`
+	WarningTime uint    `json:"warningtime"`
+	Message     *string `json:"message"`
+}
+
+type WorldInfo struct {
+	Map       *string `json:"map"`
+	WorldSize *int    `json:"worldsize"`
+	WorldSeed *int    `json:"worldseed"`
 }
 
 type Server struct {
 	Enabled bool `json:"enabled"`
 
 	// Server ID from Pterodactyl.
+	ID   int    `json:"id"`
 	UUID string `json:"uuid"`
 
 	// API/Debug.
@@ -16,7 +23,7 @@ type Server struct {
 	APIToken   *string `json:"apitoken"`
 	DebugLevel *int    `json:"debuglevel"`
 
-	// Paths (e.g. /home/container/server/rust).
+	// Paths (e.g. /server/rust).
 	PathToServerFiles *string `json:"pathtoserverfiles"`
 
 	// Wipe date/times.
@@ -34,11 +41,11 @@ type Server struct {
 
 	DeleteSv *bool `json:"deletesv"`
 
-	// Map seeds.
-	ChangeMapSeeds   *bool        `json:"changemapseed"`
-	MapSeeds         *interface{} `json:"mapseeds"`
-	MapSeedsPickType *int         `json:"mapseedspicktype"`
-	MapSeedsMerge    *bool        `json:"mapseedsmerge"`
+	// Map seeds/sizes.
+	ChangeWorldInfo   *bool        `json:"changeworldinfo"`
+	WorldInfo         *[]WorldInfo `json:"worldinfo"`
+	WorldInfoPickType *int         `json:"worldinfopicktype"`
+	WorldInfoMerge    *bool        `json:"worldinfomerge"`
 
 	// Host name.
 	ChangeHostName *bool   `json:"changehostname"`
@@ -80,10 +87,11 @@ type Config struct {
 
 	DeleteSv bool `json:"deletesv"`
 
-	// Map seeds.
-	ChangeMapSeed    bool        `json:"changemapseed"`
-	MapSeeds         interface{} `json:"mapseeds"`
-	MapSeedsPickType int         `json:"mapspicktype"`
+	// Maps, seeds, and world sizes.
+	ChangeWorldInfo   bool        `json:"changeworldinfo"`
+	WorldInfo         []WorldInfo `json:"worldinfo"`
+	WorldInfoPickType int         `json:"worldinfopicktype"`
+	WorldInfoMerge    bool        `json:"worldinfomerge"`
 
 	// Host name.
 	ChangeHostName bool   `json:"changehostname"`
@@ -106,8 +114,6 @@ func (cfg *Config) SetDefaults() {
 	cfg.CronStr = "30 15 * * 4"
 	cfg.CronMerge = true
 
-	cfg.AutoAddServers = false
-
 	cfg.DeleteMap = true
 	cfg.DeleteBP = true
 	cfg.DeleteDeaths = true
@@ -117,8 +123,7 @@ func (cfg *Config) SetDefaults() {
 
 	cfg.DeleteSv = true
 
-	cfg.ChangeMapSeed = false
-	cfg.MapSeedsPickType = 1
+	cfg.WorldInfoPickType = 1
 
 	cfg.ChangeHostName = true
 	cfg.HostName = "Vanilla | FULL WIPE {month_two}/{day_two}"
@@ -126,8 +131,11 @@ func (cfg *Config) SetDefaults() {
 	// Warn each second for the last 10 seconds before the wipe.
 	for i := 1; i <= 10; i++ {
 		var warning WarningMessage
+		tmp := "Wiping server in {seconds_left} seconds. Please join back!"
 
-		warning.Message = "Wiping server in {seconds_left} seconds. Please join back!"
+		warning.Message = &tmp
+
+		*warning.Message = "Wiping server in {seconds_left} seconds. Please join back!"
 		warning.WarningTime = uint(i)
 
 		cfg.WarningMessages = append(cfg.WarningMessages, warning)

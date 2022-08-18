@@ -24,11 +24,11 @@ const VERSION = "1.0.0"
 func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Wiping server...")
 
-	// Process map seeds.
-	if data.ChangeMapSeeds {
-		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing seeds...")
+	// Process world info.
+	if data.ChangeWorldInfo {
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Processing world info...")
 
-		wipe.ProcessSeeds(data, srv.UUID)
+		wipe.ProcessWorldInfo(data, srv.UUID)
 	}
 
 	// Process host name.
@@ -40,7 +40,7 @@ func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 
 	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Stopping server...")
 
-	// We should stop the server (To Do: Implement something to check if server is running and force kill if so).
+	// We should stop the server
 	wipe.StopServer(data, srv.UUID)
 
 	// Wait until the server is confirmed stopped.
@@ -133,6 +133,9 @@ func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 
 func srv_handler(cfg *config.Config, srv *config.Server) error {
 	var err error
+
+	// Environmental overrides.
+	wipe.EnvOverride(cfg, srv)
 
 	// We need to retrieve the wipe data information first.
 	var data wipe.Data
@@ -232,7 +235,7 @@ func srv_handler(cfg *config.Config, srv *config.Server) error {
 						continue
 					}
 
-					warning_msg := warning.Message
+					warning_msg := *warning.Message
 					format.FormatString(&warning_msg, int(wt))
 
 					debug.SendDebugMsg(srv.UUID, data.DebugLevel, 2, "Sending warning message => "+warning_msg+".")
@@ -298,9 +301,7 @@ func main() {
 	err := cfg.LoadConfig(*configFile)
 
 	// See if we want to automatically add servers.
-	if cfg.AutoAddServers {
-		autoaddservers.AddServers(&cfg)
-	}
+	autoaddservers.AddServers(&cfg)
 
 	// If we have no config, create the file with the defaults.
 	if err != nil {
@@ -321,6 +322,13 @@ func main() {
 
 	// Check for list flag.
 	if list {
+
+		// Process environmental data before returning list.
+		for i := 0; i < len(cfg.Servers); i++ {
+			srv := &cfg.Servers[i]
+
+			wipe.EnvOverride(&cfg, srv)
+		}
 		// Encode config as JSON string.
 		json_data, err := json.MarshalIndent(cfg, "", "   ")
 
@@ -349,10 +357,10 @@ func main() {
 			continue
 		}
 
-		var srvtwo config.Server = srv
+		var srv_two config.Server = srv
 
 		// Spawn Go routine.
-		go srv_handler(&cfg, &srvtwo)
+		go srv_handler(&cfg, &srv_two)
 	}
 
 	// Signal.
