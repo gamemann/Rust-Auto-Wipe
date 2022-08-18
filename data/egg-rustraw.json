@@ -311,9 +311,9 @@
             "field_type": "text"
         },
         {
-            "name": "RAW Change Map Seed",
-            "description": "Change map seed override.",
-            "env_variable": "RAW_CHANGEMAPSEED",
+            "name": "RAW Change World Info",
+            "description": "Change world info (e.g. map, size, and seed).",
+            "env_variable": "RAW_CHANGEWORLDINFO",
             "default_value": "",
             "user_viewable": true,
             "user_editable": true,
@@ -321,9 +321,9 @@
             "field_type": "text"
         },
         {
-            "name": "RAW Map Seeds",
-            "description": "Map seeds override.",
-            "env_variable": "RAW_MAPSEEDS",
+            "name": "RAW World Info",
+            "description": "World info override.",
+            "env_variable": "RAW_WORLDINFO",
             "default_value": "",
             "user_viewable": true,
             "user_editable": true,
@@ -331,9 +331,9 @@
             "field_type": "text"
         },
         {
-            "name": "RAW Map Seeds Pick Type",
-            "description": "Map seeds pick type override.",
-            "env_variable": "RAW_MAPSEEDSPICKTYPE",
+            "name": "RAW World Info Pick Type",
+            "description": "World info pick type override.",
+            "env_variable": "RAW_WORLDINFOPICKTYPE",
             "default_value": "",
             "user_viewable": true,
             "user_editable": true,
@@ -341,9 +341,9 @@
             "field_type": "text"
         },
         {
-            "name": "RAW Map Seeds Merge",
-            "description": "Map seeds merge override.",
-            "env_variable": "RAW_MAPSEEDSMERGE",
+            "name": "RAW World Info Merge",
+            "description": "World info merge override.",
+            "env_variable": "RAW_WORLDINFOMERGE",
             "default_value": "",
             "user_viewable": true,
             "user_editable": true,
