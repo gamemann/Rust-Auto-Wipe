@@ -268,7 +268,7 @@ The following is a list of environmental names you can create variables within P
 * **RAW_WARNINGMESSAGES** - Warning messages override (another special case, this should be a JSON string of the normal `warningmessages` JSON item). Example - `[{"warningtime": 5, "message": "{seconds_left} until wipe!"}]`.
 * **RAW_WIPEFIRST** - Wipe first override.
 
-## Building and Running Project
+## Building And Running Project (Manually)
 Building the project is simple. We only require `git` and Go.
 
 ```bash
