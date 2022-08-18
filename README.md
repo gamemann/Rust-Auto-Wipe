@@ -192,7 +192,7 @@ When the program is ran, but no configuration file is found, it will attempt to 
 
 The servers array includes the following:
 
-```json
+```
 {
     "servers": [
         {
