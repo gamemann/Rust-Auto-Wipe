@@ -300,9 +300,6 @@ func main() {
 	// Attempt to read config.
 	err := cfg.LoadConfig(*configFile)
 
-	// See if we want to automatically add servers.
-	autoaddservers.AddServers(&cfg)
-
 	// If we have no config, create the file with the defaults.
 	if err != nil {
 		// If there's an error and it contains "no such file", try to create the file with defaults.
@@ -318,6 +315,9 @@ func main() {
 		}
 
 		fmt.Println("WARNING - No config file found. Created config file at " + *configFile + " with defaults.")
+	} else {
+		// See if we want to automatically add servers.
+		autoaddservers.AddServers(&cfg)
 	}
 
 	// Check for list flag.
