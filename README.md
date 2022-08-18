@@ -2,13 +2,16 @@
 [![RAW Build Workflow](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/build.yml/badge.svg)](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/build.yml) [![RAW Run Workflow](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/run.yml/badge.svg)](https://github.com/gamemann/Rust-Auto-Wipe/actions/workflows/run.yml)
 
 ## Description
-An application made in Go for Rust servers operating with [Pterodactyl](https://pterodactyl.io/). This application automatically wipes server(s) based off of cron jobs. The program is aimed to be as flexible as possible. With that said, there are many features including the following.
+An application made in Go (latest version works) for Rust servers operating with [Pterodactyl](https://pterodactyl.io/) (latest API version works). This application automatically wipes server(s) based off of cron jobs. The program is aimed to be as flexible as possible. With that said, there are many features including the following.
 
-* Allow rotating of map seeds.
+* Allow rotating of world settings (map/level, world size, and world seed).
 * Allow automatically changing the host name on each wipe with format support (including option replacements like `{day_two}` and `{month_two}`).
 * Deletion of files with the option to except specific types (e.g. don't delete player data such as states, identities, tokens, and more).
 * A flexible configuration and uses a cron job system (support for multiple cron jobs per server).
-* Support for retrieving servers from Pterodactyl API and allowing environmental overrides.
+* Support for retrieving servers automatically from Pterodactyl API.
+* Pterodactyl egg variable overrides to allow others to change these settings without having access to the application's file system.
+
+**Note** - This is only tested on Linux. However, technically it should work for Windows as well.
 
 ## Command Line Usage
 The below is the command line usage from the help menu for this program.
@@ -22,15 +25,13 @@ Help Options
 ```
 
 ## Configuration
-All configuration is done inside a config file on disk via JSON. The default path is `/etc/raw/raw.conf` and may be changed via the `-cfg` flag.
+All configuration is done inside a config file on disk via JSON or through environmental variable overrides. The default config path is `/etc/raw/raw.conf` and may be changed via the `-cfg` command line flag.
 
 Any wipe-specific configuration at the top-level of the configuration is used as the default values for each server. Each server may override these by specifiying the same key => value pairs inside of the server array. 
 
-There is also support for environmental variables for auto-added servers from the Pterodactyl panel which will allow you to give access to override server-specific options to users with authorization in your Pterodactyl database.
-
 When the program is ran, but no configuration file is found, it will attempt to create the file (likely requiring root privileges by default if trying to create inside of `/etc/`, however). The below are all JSON settings along with their default values, but with added comments. Remember that JSON does **not** support comments. Therefore, copying the below contents with comments will result in errors. This is why it's recommended to allow the program to create a default configuration file.
 
-```json
+```
 {
     // The URL to the panel (make sure to include a trailing /). Ex: http://ptero.something.internal/
     "apiurl": "",
@@ -79,14 +80,17 @@ When the program is ran, but no configuration file is found, it will attempt to 
     // Whether to delete server data/files (includes any files with sv.files in the file name). 
     "deletesv": true,
 
-    // Whether to change the map seed.
-    "changemapseed": false,
+    // Whether to change the world info.
+    "changeworldinfo": false,
 
-    // A list of map seeds (e.g. [1203213, 12312312, 235123]).
-    "mapseeds": null,
+    // An array with the map, world size, and world seed. (e.g. [{"map": "Procedural Map", "worldsize": 4000, "worldseed": 9213913}])
+    "worldinfo": null,
 
-    // Pick type (1 = pick the next seed, otherwise, pick a random seed).
-    "mapspicktype": 1,
+    // World info pick type (1 = pick the next world, otherwise, pick a random world).
+    "worldinfopicktype": 1,
+
+    // Whether to merge world information arrays.
+    "worldinfomerge": false,
 
     // Whether to change the hostname.
     "changehostname": true,
@@ -195,7 +199,10 @@ The servers array includes the following:
             // Whether to enable the server or not (enabled by default).
             "enabled": true,
 
-            // The (short) UUID of the server. Characters before the first "-" in the long UUID.
+            // The number ID of the server (should be retrieved automatically if the server exists).
+            "id": 0,
+
+            // The (short) identifier of the server. Characters before the first "-" in the long UUID.
             "uuid": "",
 
             // Overrides (retrieve definition from top-level comments above).
@@ -212,9 +219,10 @@ The servers array includes the following:
             "deleteidentities": true,
             "deletetokens": true,
             "deletesv": true,
-            "changemapseeds": false,
-            "mapseeds": null,
-            "mapspicktype": 1,
+            "changeworldinfo": false,
+            "worldinfo": null,
+            "worldinfopicktype": 1,
+            "worldinfomerge": false,
             "changehostname": true,
             "hostname": "Vanilla | FULL WIPE {month_two}/{day_two}",
             "mergewarnings": false,
@@ -234,9 +242,9 @@ The servers array includes the following:
 ## Environmental Overrides With Auto-Added Servers
 There are environmental overrides for servers that are added from the Pterodactyl API. This allows you to distribute access easier from within the Pterodactyl panel itself.
 
-These are only server-specific options for obvious reasons.
+With that said, the file `data/egg-rustraw.json` file in this respository is an exported egg that has the standard Rust egg settings from Pterodactyl along with the additional RAW settings. If you import this egg into Pterodactyl under Rust and change the server's egg in the administrator settings, it will easily migrate all existing variable settings over including the Rust egg's default variables.
 
-It doesn't technically matter what type of variable you make these (they are parsed properly within the code). However, it's recommended to still use integers, booleans, and so on for readability reasons instead of strings.
+Each variable is also parsed as a string within the application's code. For true/false, use the 1/0 integers respectfully.
 
 The following is a list of environmental names you can create variables within Pterodactyl Nests/Eggs for overrides.
 * **RAW_ENABLED** - Enabled override.
@@ -250,18 +258,18 @@ The following is a list of environmental names you can create variables within P
 * **RAW_DELETESTATES** - Delete states override.
 * **RAW_DELETEIDENTITIES** - Delete identities override.
 * **RAW_DELETESV** - Delete server files/data override.
-* **RAW_CHANGEMAPSEEDS** - Change map seeds override.
-* **RAW_MAPSEEDS** - Map seeds override (this is a special case, map seeds can either be a single integer or an integer array as a JSON string (e.g. `[4123143, 212312, 3512321]`)).
-* **RAW_MAPSEEDSPICKTYPE** - Change map seeds pick type override.
-* **RAW_MAPSEEDSMERGE** - Change map seeds merge override.
+* **RAW_CHANGEWORLDINFO** - Change world info override.
+* **RAW_WORLDINFO** - World info override. An array with the map, world size, and world seed. (e.g. `[{"map": "Procedural Map", "worldsize": 4000, "worldseed": 9213913}]` as a string).
+* **RAW_WORLDINFOPICKTYPE** - Change world info pick type override.
+* **RAW_WORLDINFOMERGE** - Change world info merge override.
 * **RAW_CHANGEHOSTNAME** - Change hostname override.
 * **RAW_HOSTNAME** - Hostname override.
 * **RAW_MERGEWARNINGS** - Merge warnings override.
-* **RAW_WARNINGMESSAGES** - Warning messages override (another special case, this should be a JSON string of the normal `warningmessages` JSON item). Example - `{"data": [{"warningtime": 5, "message": "{seconds_left} until wipe!"}]}`.
+* **RAW_WARNINGMESSAGES** - Warning messages override (another special case, this should be a JSON string of the normal `warningmessages` JSON item). Example - `[{"warningtime": 5, "message": "{seconds_left} until wipe!"}]`.
 * **RAW_WIPEFIRST** - Wipe first override.
 
 ## Building and Running Project
-Building the project is simple and only requires `git` and Go.
+Building the project is simple. We only require `git` and Go.
 
 ```bash
 # Clone repository.
@@ -270,14 +278,13 @@ git clone https://github.com/gamemann/Rust-Auto-Wipe.git
 # Change directory to repository.
 cd Rust-Auto-Wipe/
 
-# Retrieve public Cron package (V3).
-go get github.com/robfig/cron/v3
-
-# Build using Go into `raw` executable.
+# Build using Go into `raw` executable. This will also retrieve needed packages such as Cronv3.
 go build -o raw
 ```
 
-## Using Makefile + Systemd
+Using `Makefile` as described below is my personal recommendation on installing this application for Linux-based systems.
+
+## Using Makefile + Systemd (Recommended)
 You may also use a Makefile I made to build the application and install a Systemd file.
 
 ```bash
@@ -291,7 +298,7 @@ sudo make install
 To have the application run on startup, and/or in the background, you may do the following.
 
 ```bash
-# Reload Systemd daemon (needed after install of Systemd service).
+# Reload Systemd daemon (may be needed after install of Systemd service).
 sudo systemctl daemon-reload
 
 # Enable (on startup) and start service.
