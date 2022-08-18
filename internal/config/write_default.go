@@ -3,12 +3,15 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"path"
 )
 
 func (cfg *Config) WriteDefaultsToFile(file string) error {
 	var err error
 
-	err = os.MkdirAll("/etc/raw", 0755)
+	dir := path.Dir(file)
+
+	err = os.MkdirAll(dir, 0755)
 
 	// If we have an error and it doesn't look like an "already exist" error, return the error.
 	if err != nil && !os.IsExist(err) {
