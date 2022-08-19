@@ -195,7 +195,7 @@ When the program is ran, but no configuration file is found, it will attempt to 
     // Hooks (submits POST data in JSON with "id", "uuid", "identifier", "name", "ip", and "port" to the hook string/URL). The auth string for each is set to the "Authorization" header (e.g. "Bearer xxxxx").
     // Pre wipe hook.
     prehook: "",
-    prehookauth
+    prehookauth: "",
 
     // Post wipe hook.
     posthook: "",
