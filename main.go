@@ -162,7 +162,7 @@ func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 	// Check if we need to send a posthook.
 	if len(cfg.PostHook) > 0 {
 		// Set wipe type.
-		hook_data["pre"] = true
+		hook_data["post"] = true
 
 		// Send HTTP request to posthook endpoint.
 		d, _, err := chttp.SendHTTPReq(cfg.PostHook, cfg.PostHook, "POST", hook_data)
