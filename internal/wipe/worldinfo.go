@@ -131,7 +131,7 @@ func GetNextWorld(data *Data) config.WorldInfo {
 	} else {
 		rand.Seed(time.Now().UnixNano())
 		min := 0
-		max := len(worlds)
+		max := len(worlds) - 1
 		world = data.WorldInfo[rand.Intn(max-min+1)+min]
 	}
 
