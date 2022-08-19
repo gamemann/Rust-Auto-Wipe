@@ -10,6 +10,7 @@ An application made in Go (latest version works) for Rust servers operating with
 * A flexible configuration and uses a cron job system (support for multiple cron jobs per server).
 * Support for retrieving servers automatically from Pterodactyl API.
 * Pterodactyl egg variable overrides to allow others to change these settings without having access to the application's file system.
+* Pre and post wipe hooks (sends POST data to specific endpoints that can be used for Discord web hooks for example).
 
 **Note** - This is only tested on Linux. However, technically it should work for Windows as well.
 
