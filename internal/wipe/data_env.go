@@ -207,6 +207,39 @@ func EnvOverride(cfg *config.Config, srv *config.Server) error {
 		*srv.DeleteTokens, _ = strconv.ParseBool(*env.RAW_DeleteTokens)
 	}
 
+	// Merge delete files override.
+	if env.RAW_DeleteFilesMerge != nil && len(*env.RAW_DeleteFilesMerge) > 0 {
+		// Make sure we don't need to allocate memory.
+		if srv.DeleteFilesMerge == nil {
+			var val bool
+			srv.DeleteFilesMerge = &val
+		}
+
+		*srv.DeleteFilesMerge, _ = strconv.ParseBool(*env.RAW_DeleteFilesMerge)
+	}
+
+	// Additional file deletions
+	if env.RAW_DeleteFiles != nil && len(*env.RAW_DeleteFiles) > 0 {
+		// Make sure we don't need to allocate memory.
+		if srv.DeleteFiles == nil {
+			var val []config.AdditionalFiles
+			srv.DeleteFiles = &val
+		}
+
+		// Parse as string.
+		data := *env.RAW_DeleteFiles
+
+		// Create structure for expected format.
+		var delete_file []config.AdditionalFiles
+
+		// Convert string to structure via JSON.
+		err := json.Unmarshal([]byte(data), &delete_file)
+
+		if err == nil {
+			*srv.DeleteFiles = delete_file
+		}
+	}
+
 	// Delete server files/data override.
 	if env.RAW_DeleteSv != nil && len(*env.RAW_DeleteSv) > 0 {
 		// Make sure we don't need to allocate memory.
@@ -215,7 +248,7 @@ func EnvOverride(cfg *config.Config, srv *config.Server) error {
 			srv.DeleteSv = &val
 		}
 
-		*srv.DeleteMap, _ = strconv.ParseBool(*env.RAW_DeleteSv)
+		*srv.DeleteSv, _ = strconv.ParseBool(*env.RAW_DeleteSv)
 	}
 
 	// Change world info override.

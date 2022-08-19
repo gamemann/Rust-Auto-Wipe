@@ -43,8 +43,9 @@ type Data struct {
 	DeleteStates     bool
 	DeleteIdentities bool
 	DeleteTokens     bool
-
-	DeleteSv bool
+	DeleteSv         bool
+	DeleteFiles      []config.AdditionalFiles
+	DeleteFilesMerge bool
 
 	ChangeWorldInfo   bool
 	WorldInfo         []config.WorldInfo
@@ -246,6 +247,31 @@ func ProcessData(data *Data, cfg *config.Config, srv *config.Server) error {
 	}
 
 	data.DeleteSv = deletesv
+
+	// Check for warnings merge override.
+	delete_files_merge := cfg.DeleteFilesMerge
+
+	if srv.DeleteFilesMerge != nil {
+		delete_files_merge = *srv.DeleteFilesMerge
+	}
+
+	data.DeleteFilesMerge = delete_files_merge
+
+	// Check for warnings override.
+	delete_files := cfg.DeleteFiles
+
+	// Check if we need to merge warning messages or override.
+	if srv.DeleteFiles != nil {
+		if delete_files_merge {
+			for _, v := range *srv.DeleteFiles {
+				delete_files = append(delete_files, v)
+			}
+		} else {
+			delete_files = *srv.DeleteFiles
+		}
+	}
+
+	data.DeleteFiles = delete_files
 
 	// Check for change world info override.
 	changeworldinfo := cfg.ChangeWorldInfo

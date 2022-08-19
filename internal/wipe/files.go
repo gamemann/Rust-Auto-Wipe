@@ -143,5 +143,93 @@ func ProcessFiles(data *Data, UUID string) bool {
 		return false
 	}
 
+	if len(data.DeleteFiles) > 0 {
+		debug.SendDebugMsg(UUID, data.DebugLevel, 2, "Deleting additional files...")
+	}
+
+	// Now delete additional files.
+	for _, v := range data.DeleteFiles {
+		var files_to_delete []string
+
+		// Firstly, to support wildcards and such, we need to list all the files and then add them to the array if found (supports full paths as well).
+		// Make sure to URL encode the query string (directory/root path).
+		dir := url.QueryEscape(v.Root)
+
+		ep := "client/servers/" + UUID + "/files/list?directory=" + dir
+
+		// We first need to retrieve the current variable.
+		d, _, err := pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "GET", ep, nil)
+
+		debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+"api/"+ep+". Post data => nil.")
+		debug.SendDebugMsg(UUID, data.DebugLevel, 4, "List Files return data => "+d+".")
+
+		if pterodactyl.IsError(d) {
+			debug.SendDebugMsg(UUID, data.DebugLevel, 0, "Could not list files in directory ("+dir+"). Please enable debugging level 4 for body response including errors.")
+
+			return false
+		}
+
+		if err != nil {
+			fmt.Println(err)
+
+			return false
+		}
+
+		// We want to parse the response with the startup response structure.
+		var files_list pterodactyl.ListFilesResp
+
+		// Convert to JSON.
+		err = json.Unmarshal([]byte(d), &files_list)
+
+		if err != nil {
+			fmt.Println(err)
+
+			return false
+		}
+
+		for _, file := range files_list.Data {
+			// Make sure we're not dealing with a directory or link.
+			if !file.Attributes.IsFile || file.Attributes.IsSymlink {
+				continue
+			}
+
+			// Now loop through all of our additional files and see if any in the directory contain the string. If so, add it to the delete files list.
+			for _, file_str := range v.Files {
+				if strings.Contains(file.Attributes.Name, file_str) {
+					// Append file to list since found.
+					files_to_delete = append(files_to_delete, file.Attributes.Name)
+				}
+			}
+		}
+
+		// Make new POST request.
+		post_data := make(map[string]interface{})
+		post_data["root"] = v.Root
+		post_data["files"] = files_to_delete
+
+		// Debug.
+		debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Deleting additional files => "+strings.Join(files_to_delete, ", ")+" (directory = "+data.PathToServerFiles+").")
+
+		ep = "client/servers/" + UUID + "/files/delete"
+
+		// We first need to retrieve the current variable.
+		d, _, err = pterodactyl.SendAPIRequest(data.APIURL, data.APIToken, "POST", ep, post_data)
+
+		debug.SendDebugMsg(UUID, data.DebugLevel, 3, "Sending request. Request => "+data.APIURL+"api/"+ep+". Post data => "+misc.CreateKeyPairs(post_data)+".")
+		debug.SendDebugMsg(UUID, data.DebugLevel, 4, "Additional Delete Files return data => "+d+".")
+
+		if pterodactyl.IsError(d) {
+			debug.SendDebugMsg(UUID, data.DebugLevel, 0, "Could not delete additional files in directory ("+dir+"). Please enable debugging level 4 for body response including errors.")
+
+			return false
+		}
+
+		if err != nil {
+			fmt.Println(err)
+
+			return false
+		}
+	}
+
 	return true
 }

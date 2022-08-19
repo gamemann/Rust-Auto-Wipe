@@ -11,6 +11,11 @@ type WorldInfo struct {
 	WorldSeed *int    `json:"worldseed"`
 }
 
+type AdditionalFiles struct {
+	Root  string   `json:"root"`
+	Files []string `json:"files"`
+}
+
 type Server struct {
 	Enabled bool `json:"enabled"`
 
@@ -32,14 +37,15 @@ type Server struct {
 	CronMerge *bool        `json:"cronmerge"`
 
 	// Files/data that should be deleted.
-	DeleteMap        *bool `json:"deletemap"`
-	DeleteBP         *bool `json:"deletebp"`
-	DeleteDeaths     *bool `json:"deletedeaths"`
-	DeleteIdentities *bool `json:"deleteidentities"`
-	DeleteStates     *bool `json:"deletestates"`
-	DeleteTokens     *bool `json:"deletetokens"`
-
-	DeleteSv *bool `json:"deletesv"`
+	DeleteMap        *bool              `json:"deletemap"`
+	DeleteBP         *bool              `json:"deletebp"`
+	DeleteDeaths     *bool              `json:"deletedeaths"`
+	DeleteIdentities *bool              `json:"deleteidentities"`
+	DeleteStates     *bool              `json:"deletestates"`
+	DeleteTokens     *bool              `json:"deletetokens"`
+	DeleteSv         *bool              `json:"deletesv"`
+	DeleteFiles      *[]AdditionalFiles `json:"deletefiles"`
+	DeleteFilesMerge *bool              `json:"deletefilesmerge"`
 
 	// Map seeds/sizes.
 	ChangeWorldInfo   *bool        `json:"changeworldinfo"`
@@ -78,14 +84,15 @@ type Config struct {
 	CronMerge bool        `json:"cronmerge"`
 
 	// Files/data that should be deleted.
-	DeleteMap        bool `json:"deletemap"`
-	DeleteBP         bool `json:"deletebp"`
-	DeleteDeaths     bool `json:"deletedeaths"`
-	DeleteStates     bool `json:"deletestates"`
-	DeleteIdentities bool `json:"deleteidentities"`
-	DeleteTokens     bool `json:"deletetokens"`
-
-	DeleteSv bool `json:"deletesv"`
+	DeleteMap        bool              `json:"deletemap"`
+	DeleteBP         bool              `json:"deletebp"`
+	DeleteDeaths     bool              `json:"deletedeaths"`
+	DeleteStates     bool              `json:"deletestates"`
+	DeleteIdentities bool              `json:"deleteidentities"`
+	DeleteTokens     bool              `json:"deletetokens"`
+	DeleteSv         bool              `json:"deletesv"`
+	DeleteFiles      []AdditionalFiles `json:"deletefiles"`
+	DeleteFilesMerge bool              `json:"deletefilesmerge"`
 
 	// Maps, seeds, and world sizes.
 	ChangeWorldInfo   bool        `json:"changeworldinfo"`

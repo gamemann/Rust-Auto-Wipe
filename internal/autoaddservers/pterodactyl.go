@@ -35,6 +35,8 @@ type RawEnv struct {
 	RAW_DeleteStates      *string `json:"RAW_DELETESTATES"`
 	RAW_DeleteIdentities  *string `json:"RAW_DELETEIDENTITIES"`
 	RAW_DeleteTokens      *string `json:"RAW_DELETETOKENS"`
+	RAW_DeleteFilesMerge  *string `json:"RAW_DELETEFILESMERGE"`
+	RAW_DeleteFiles       *string `json:"RAW_DELETEFILES"`
 	RAW_DeleteSv          *string `json:"RAW_DELETESV"`
 	RAW_ChangeWorldInfo   *string `json:"RAW_CHANGEWORLDINFO"`
 	RAW_WorldInfo         *string `json:"RAW_WORLDINFO"`
