@@ -20,8 +20,12 @@ type Server struct {
 	Enabled bool `json:"enabled"`
 
 	// Server ID from Pterodactyl.
-	ID   int    `json:"id"`
-	UUID string `json:"uuid"`
+	ID     int    `json:"id"`
+	LongID string `json:"uuidlong"`
+	UUID   string `json:"uuid"`
+	IP     string `json:"ip"`
+	Port   int    `json:"port"`
+	Name   string `json:"name"`
 
 	// API/Debug.
 	APIURL     *string `json:"apiurl"`
@@ -107,6 +111,15 @@ type Config struct {
 	// Warning chat messages.
 	MergeWarnings   bool             `json:"mergewarnings"`
 	WarningMessages []WarningMessage `json:"warningmessages"`
+
+	// Hooks that send information to an endpoint with POST data. Useful for sending updates to Discord for example.
+	// Pre wipe hook.
+	PreHookAuth string `json:"prehookauth"`
+	PreHook     string `json:"prehook"`
+
+	// POST wipe hook.
+	PostHookAuth string `json:"posthookauth"`
+	PostHook     string `json:"posthook"`
 
 	Servers []Server `json:"servers"`
 }

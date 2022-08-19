@@ -13,8 +13,10 @@ import (
 	"github.com/gamemann/Rust-Auto-Wipe/internal/autoaddservers"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/config"
 	"github.com/gamemann/Rust-Auto-Wipe/internal/wipe"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/chttp"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/debug"
 	"github.com/gamemann/Rust-Auto-Wipe/pkg/format"
+	"github.com/gamemann/Rust-Auto-Wipe/pkg/misc"
 	cron "github.com/robfig/cron/v3"
 )
 
@@ -23,6 +25,33 @@ const VERSION = "1.0.0"
 
 func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 	debug.SendDebugMsg(srv.UUID, data.DebugLevel, 1, "Wiping server...")
+
+	// Add data for hooks.
+	hook_data := make(map[string]interface{})
+	hook_data["identifier"] = srv.UUID
+	hook_data["uuid"] = srv.LongID
+	hook_data["name"] = srv.Name
+	hook_data["ip"] = srv.IP
+	hook_data["port"] = srv.Port
+	hook_data["pre"] = false
+	hook_data["post"] = false
+
+	// Check if we need to send a prehook.
+	if len(cfg.PreHook) > 0 {
+		// Set wipe type.
+		hook_data["pre"] = true
+
+		// Send HTTP request to prehook endpoint.
+		d, _, err := chttp.SendHTTPReq(cfg.PreHook, cfg.PreHookAuth, "POST", hook_data)
+
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 3, "Sending prehook. Request => "+cfg.PreHook+". Post data => "+misc.CreateKeyPairs(hook_data)+".")
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 4, "Prehook return data => "+d+".")
+
+		if err != nil {
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 0, "Failed to send prehook request.")
+			fmt.Println(err)
+		}
+	}
 
 	// Process world info.
 	if data.ChangeWorldInfo {
@@ -128,6 +157,23 @@ func wipe_server(cfg *config.Config, srv *config.Server, data *wipe.Data) {
 
 		// Sleep every second to avoid unnecessary CPU cycles.
 		time.Sleep(time.Duration(time.Second))
+	}
+
+	// Check if we need to send a posthook.
+	if len(cfg.PostHook) > 0 {
+		// Set wipe type.
+		hook_data["pre"] = true
+
+		// Send HTTP request to posthook endpoint.
+		d, _, err := chttp.SendHTTPReq(cfg.PostHook, cfg.PostHook, "POST", hook_data)
+
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 3, "Sending posthook. Request => "+cfg.PostHook+". Post data => "+misc.CreateKeyPairs(hook_data)+".")
+		debug.SendDebugMsg(srv.UUID, data.DebugLevel, 4, "Posthook return data => "+d+".")
+
+		if err != nil {
+			debug.SendDebugMsg(srv.UUID, data.DebugLevel, 0, "Failed to send posthook request.")
+			fmt.Println(err)
+		}
 	}
 }
 

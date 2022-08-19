@@ -2,6 +2,7 @@ package autoaddservers
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -21,8 +22,10 @@ type WarningMessageOverride struct {
 }
 
 type RawEnv struct {
-	WorldSeed *string `json:"WORLD_SEED"`
-	HostName  *string `json:"HOSTNAME"`
+	WorldSeed  *string `json:"WORLD_SEED"`
+	HostName   *string `json:"HOSTNAME"`
+	ServerIP   *string `json:"SERVER_IP"`
+	ServerPort *string `json:"SERVER_PORT"`
 
 	RAW_Enabled           *string `json:"RAW_ENABLED"`
 	RAW_PathToServerFiles *string `json:"RAW_PATHTOSERVERFILES"`
@@ -140,6 +143,18 @@ func AddServers(cfg *config.Config) error {
 			// We must make sure the Rust environmental variables are valid if we're going to add said server.
 			env := &v.Attributes.Container.Environment
 
+			ip := ""
+
+			if env.ServerIP != nil {
+				ip = *env.ServerIP
+			}
+
+			port := ""
+
+			if env.ServerPort != nil {
+				port = *env.ServerPort
+			}
+
 			// Loop through all current servers and make sure we update the ID if necessary.
 			if !cfg.AutoAddServers {
 				goto updateid
@@ -168,12 +183,20 @@ func AddServers(cfg *config.Config) error {
 			cfg.Servers = append(cfg.Servers, srv)
 
 		updateid:
-			// Get ID number.
+			// Get server information
 			for i := 0; i < len(cfg.Servers); i++ {
 				srv := &cfg.Servers[i]
 
 				if srv.UUID == v.Attributes.Identifier {
 					srv.ID = v.Attributes.ID
+					srv.Name = v.Attributes.Name
+					srv.LongID = v.Attributes.UUID
+					srv.IP = ip
+					srv.Port, err = strconv.Atoi(port)
+
+					if err != nil {
+						fmt.Println(err)
+					}
 				}
 			}
 		}
