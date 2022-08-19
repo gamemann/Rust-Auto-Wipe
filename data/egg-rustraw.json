@@ -301,6 +301,26 @@
             "field_type": "text"
         },
         {
+            "name": "RAW Additional Delete Files Merge",
+            "description": "Merge additional deletion of files from top-level config..",
+            "env_variable": "RAW_DELETEFILESMERGE",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "int|nullable",
+            "field_type": "text"
+        },
+        {
+            "name": "RAW Additional Delete Files",
+            "description": "Additional deletion of files.",
+            "env_variable": "RAW_DELETEFILES",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "string|nullable",
+            "field_type": "text"
+        },
+        {
             "name": "RAW Delete Server Files\/Data",
             "description": "Delete server files\/data override.",
             "env_variable": "RAW_DELETESV",
