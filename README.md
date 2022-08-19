@@ -77,6 +77,12 @@ When the program is ran, but no configuration file is found, it will attempt to 
     // Whether to delete tokens (includes any files with tokens in the file name). 
     "deletetokens": true,
 
+    // Whether to merge the top-level additional files array and the server-specific files array.
+    "deletefilesmerge": false,
+
+    // Additional deletion of files using an array with the array items including "root" as the directory path starting from /home/container (make sure to include beginning /) and another array of strings for file deletion (wildcards included). Ex: [{"root": "/server/rust", "files": [".log"]}]
+    "deletefiles": null,
+
     // Whether to delete server data/files (includes any files with sv.files in the file name). 
     "deletesv": true,
 
@@ -218,6 +224,8 @@ The servers array includes the following:
             "deletestates": true,
             "deleteidentities": true,
             "deletetokens": true,
+            "deletefilesmerge": false,
+            "deletefiles": null,
             "deletesv": true,
             "changeworldinfo": false,
             "worldinfo": null,
@@ -257,6 +265,8 @@ The following is a list of environmental names you can create variables within P
 * **RAW_DELETEDEATHS** - Delete deaths override.
 * **RAW_DELETESTATES** - Delete states override.
 * **RAW_DELETEIDENTITIES** - Delete identities override.
+* **RAW_DELETEFILESMERGE** - Whether to merge additional deletion of files override (top-level config and server-specific).
+* **RAW_DELETEFILES** - Additional files to delete override. (e.g. `[{"root": "/server/rust", "files": [".log"]}]` as a string).
 * **RAW_DELETESV** - Delete server files/data override.
 * **RAW_CHANGEWORLDINFO** - Change world info override.
 * **RAW_WORLDINFO** - World info override. An array with the map, world size, and world seed. (e.g. `[{"map": "Procedural Map", "worldsize": 4000, "worldseed": 9213913}]` as a string).
@@ -265,7 +275,7 @@ The following is a list of environmental names you can create variables within P
 * **RAW_CHANGEHOSTNAME** - Change hostname override.
 * **RAW_HOSTNAME** - Hostname override.
 * **RAW_MERGEWARNINGS** - Merge warnings override.
-* **RAW_WARNINGMESSAGES** - Warning messages override (another special case, this should be a JSON string of the normal `warningmessages` JSON item). Example - `[{"warningtime": 5, "message": "{seconds_left} until wipe!"}]`.
+* **RAW_WARNINGMESSAGES** - Warning messages override (another special case, this should be a JSON string of the normal `warningmessages` JSON item). (e.g. `[{"warningtime": 5, "message": "{seconds_left} until wipe!"}]` as a string).
 * **RAW_WIPEFIRST** - Wipe first override.
 
 ## Building And Running Project (Manually)
